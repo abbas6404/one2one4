@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Basic Meta Tags -->
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Site Metas -->
+    <title>Login - Blood Donation</title>
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" type="text/css" href="css/bootstrap.min.css">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+    
+    <!-- Font CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Sen:wght@400;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Favicon -->
+    <link rel="icon" href="images/fevicon.png" type="image/gif" />
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+
+    <style>
+        body {
+            font-family: 'Sen', sans-serif;
+            background-color: #f8f9fa;
+        }
+        .login-container {
+            max-width: 400px;
+            margin: 100px auto;
+            padding: 40px;
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        }
+        .login-container h2 {
+            color: #8a0303;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .login-container .form-group {
+            margin-bottom: 15px;
+        }
+        .login-container .btn {
+            background-color: #8a0303;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 12px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        .login-container .btn:hover {
+            background-color: #ff4500;
+        }
+        .login-container .form-control {
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        .login-container .forgot-password {
+            text-align: center;
+            margin-top: 10px;
+        }
+        .navbar-nav .nav-link {
+            color: #8a0303;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #ff4500;
+        }
+    </style>
+</head>
+
+<body>
+    <!-- Navbar Section -->
+    <div class="container-fluid">
+        <nav class="navbar navbar-expand-lg navbar-light bg-light">
+            <!-- <a class="navbar-brand"href="index.html"><img src="images/logo.jpeg"></a> -->
+            <a class="navbar-brand" href="index.html">
+               <img src="images/logo.jpeg" style="width: 100px; height: auto;">
+             </a>
+             <div class="col-md-4">
+               <p class="banner_text">একের কাঁধে অন্যের হাত, <br>১২/১৪ ব্যাচের রক্তের বাধন টিকে থাক</p>
+               <h2 class="banner_taital">এসএসসি ১২ ও এইচএসসি ১৪ ব্যাচ</h2>
+           </div>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarSupportedContent" >
+               <ul class="navbar-nav ml-auto">
+                  <li class="nav-item active">
+                      <a class="nav-link" href="index.html" style="color: #8a0303;">Home</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="about.html" style="color: #8a0303;">About Us</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="pricing.html" style="color: #8a0303;">Donor List</a>
+                  </li>
+                  <li class="nav-item">
+                      <a class="nav-link" href="shop.html" style="color: #8a0303;">Gallery</a>
+                  </li>
+                  <li class="nav-item">
+                     <a class="nav-link" href="internal_program.html" style="color: #8a0303;">Internal Program</a>
+                 </li>
+                  <!-- <li class="nav-item">
+                      <a class="nav-link" href="services.html" style="color: #8a0303;">Services</a>
+                  </li> -->
+                  <li class="nav-item">
+                      <a class="nav-link" href="contact.html" style="color: #8a0303;">Emergency Contact</a>
+                  </li>
+                 
+              </ul>
+              
+              <!-- Add some hover effect using CSS -->
+              <style>
+                  .navbar-nav .nav-link:hover {
+                      color: #8a0303; /* Lighter red color on hover */
+                  }
+              </style>
+              
+               <form class="form-inline my-2 my-lg-0">
+                  <div class="login_bt">
+                     <ul style="list-style-type: none; padding: 0; display: flex; margin: 0;">
+                         <li class="active" style="margin-right: 15px;">
+                             <a href="become_a_donor.html" style="color: #8a0303; text-decoration: none;">Registration</a>
+                         </li>
+                         
+                         <!-- <li style="margin-right: 15px;">
+                             <a href="login.html" style="color: #8a0303; text-decoration: none;">Login</a>
+                         </li> -->
+                         <!-- <li><a href="#"><i class="fa fa-search" aria-hidden="true"></i></a></li> -->
+                     </ul>
+                 </div>
+                 
+               </form>
+            </div>
+         </nav>
+     </div>
+     <div class="notice-bar" style="background: #8a0303; color: white; font-weight: bold; padding: 10px 0; font-size: 18px;">
+        <marquee behavior="scroll" direction="left">
+           রক্তের সন্ধানে এসএসসি ২০১২ ও এইচএসসি ২০১৪ ব্যাচ, ওয়েবসাইটে আপনাকে স্বাগতম। ওয়েবসাইট এর কাজ চলছে সাময়িক অসুবিধার জন্য আমরা দু:খিত।
+        </marquee>
+    </div>
+    
+    <!-- Login Form Section -->
+    <div class="login-container">
+        <h2>Login</h2>
+        <form action="login_action.php" method="POST">
+            <div class="form-group">
+                <label for="email">Email address</label>
+                <input type="email" class="form-control" id="email" placeholder="Enter your email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" class="form-control" id="password" placeholder="Enter your password" name="password" required>
+            </div>
+            <button type="submit" class="btn" href="login.html">Login</button>
+        </form>
+        <div class="forgot-password">
+            <a href="#">Forgot Password?</a>
+        </div>
+    </div>
+    
+    <!-- Footer Section -->
+    <div class="footer_section layout_padding margin_top90">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="footer_logo"><img src="images/footer-logo.png"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Javascript files -->
+    <script src="js/jquery.min.js"></script>
+    <script src="js/popper.min.js"></script>
+    <script src="js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
