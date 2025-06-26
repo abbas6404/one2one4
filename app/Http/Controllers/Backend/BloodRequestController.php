@@ -16,7 +16,9 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Schema;
+use App\Mail\DonorAssignmentNotification;
 
 class BloodRequestController extends Controller
 {
@@ -116,7 +118,7 @@ class BloodRequestController extends Controller
                 }
 
                 // Create new donation record
-                BloodDonation::create([
+                $donation = BloodDonation::create([
                     'donor_id' => $request->donor_id,
                     'blood_request_id' => $bloodRequest->id,
                     'status' => 'pending'
@@ -130,6 +132,54 @@ class BloodRequestController extends Controller
                 // Check if we've assigned all needed donors
                 if (($currentDonations + 1) >= $bloodRequest->units_needed) {
                     $bloodRequest->update(['status' => 'completed']);
+                }
+
+                // Send email notifications
+                try {
+                    // Get the donor and requester
+                    $donor = User::findOrFail($request->donor_id);
+                    $requester = $bloodRequest->user;
+                    
+                    // Send email to donor
+                    if ($donor && $donor->email) {
+                        try {
+                            Mail::to($donor->email)->send(new DonorAssignmentNotification($donation, true));
+                            Log::info('Donor notification email sent successfully', [
+                                'donor_id' => $donor->id,
+                                'blood_request_id' => $bloodRequest->id
+                            ]);
+                        } catch (\Exception $e) {
+                            Log::error('Failed to send donor notification email', [
+                                'error' => $e->getMessage(),
+                                'donor_id' => $donor->id,
+                                'blood_request_id' => $bloodRequest->id
+                            ]);
+                        }
+                    }
+                    
+                    // Send email to requester
+                    if ($requester && $requester->email) {
+                        try {
+                            Mail::to($requester->email)->send(new DonorAssignmentNotification($donation, false));
+                            Log::info('Requester notification email sent successfully', [
+                                'requester_id' => $requester->id,
+                                'blood_request_id' => $bloodRequest->id
+                            ]);
+                        } catch (\Exception $e) {
+                            Log::error('Failed to send requester notification email', [
+                                'error' => $e->getMessage(),
+                                'requester_id' => $requester->id,
+                                'blood_request_id' => $bloodRequest->id
+                            ]);
+                        }
+                    }
+                } catch (\Exception $e) {
+                    // Log the error but don't stop the process
+                    Log::error('Failed to send donor assignment notification emails', [
+                        'error' => $e->getMessage(),
+                        'donor_id' => $request->donor_id,
+                        'blood_request_id' => $bloodRequest->id
+                    ]);
                 }
 
                 return response()->json([
@@ -156,7 +206,7 @@ class BloodRequestController extends Controller
         }
 
         // Create new donation record
-        BloodDonation::create([
+        $donation = BloodDonation::create([
             'donor_id' => $request->donor_id,
             'blood_request_id' => $bloodRequest->id,
             'status' => 'pending'
@@ -170,6 +220,54 @@ class BloodRequestController extends Controller
         // Check if we've assigned all needed donors
         if (($currentDonations + 1) >= $bloodRequest->units_needed) {
             $bloodRequest->update(['status' => 'completed']);
+        }
+
+        // Send email notifications
+        try {
+            // Get the donor and requester
+            $donor = User::findOrFail($request->donor_id);
+            $requester = $bloodRequest->user;
+            
+            // Send email to donor
+            if ($donor && $donor->email) {
+                try {
+                    Mail::to($donor->email)->send(new DonorAssignmentNotification($donation, true));
+                    Log::info('Donor notification email sent successfully', [
+                        'donor_id' => $donor->id,
+                        'blood_request_id' => $bloodRequest->id
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send donor notification email', [
+                        'error' => $e->getMessage(),
+                        'donor_id' => $donor->id,
+                        'blood_request_id' => $bloodRequest->id
+                    ]);
+                }
+            }
+            
+            // Send email to requester
+            if ($requester && $requester->email) {
+                try {
+                    Mail::to($requester->email)->send(new DonorAssignmentNotification($donation, false));
+                    Log::info('Requester notification email sent successfully', [
+                        'requester_id' => $requester->id,
+                        'blood_request_id' => $bloodRequest->id
+                    ]);
+                } catch (\Exception $e) {
+                    Log::error('Failed to send requester notification email', [
+                        'error' => $e->getMessage(),
+                        'requester_id' => $requester->id,
+                        'blood_request_id' => $bloodRequest->id
+                    ]);
+                }
+            }
+        } catch (\Exception $e) {
+            // Log the error but don't stop the process
+            Log::error('Failed to send donor assignment notification emails', [
+                'error' => $e->getMessage(),
+                'donor_id' => $request->donor_id,
+                'blood_request_id' => $bloodRequest->id
+            ]);
         }
 
         return back()->with('success', 'Donor assigned successfully');
