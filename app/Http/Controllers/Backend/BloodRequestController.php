@@ -264,17 +264,17 @@ class BloodRequestController extends Controller
         }
 
         if ($divisionId) {
-            $potentialDonorsQuery->whereHas('permanentLocation', function($query) use ($divisionId) {
+            $potentialDonorsQuery->whereHas('presentLocation', function($query) use ($divisionId) {
                 $query->where('division_id', $divisionId);
             });
         }
         if ($districtId) {
-            $potentialDonorsQuery->whereHas('permanentLocation', function($query) use ($districtId) {
+            $potentialDonorsQuery->whereHas('presentLocation', function($query) use ($districtId) {
                 $query->where('district_id', $districtId);
             });
         }
         if ($upazilaId) {
-            $potentialDonorsQuery->whereHas('permanentLocation', function($query) use ($upazilaId) {
+            $potentialDonorsQuery->whereHas('presentLocation', function($query) use ($upazilaId) {
                 $query->where('upazila_id', $upazilaId);
             });
         }
@@ -282,7 +282,7 @@ class BloodRequestController extends Controller
         $potentialDonors = $potentialDonorsQuery
             ->with(['donations' => function($q) {
                 $q->orderByDesc('donation_date');
-            }, 'permanentLocation.division', 'permanentLocation.district', 'permanentLocation.upazila'])
+            }, 'presentLocation.division', 'presentLocation.district', 'presentLocation.upazila'])
             ->get();
 
         return view('backend.pages.blood-requests.assign-donor', compact(
@@ -337,7 +337,7 @@ class BloodRequestController extends Controller
                               });
                           });
                 })
-                ->with('permanentLocation.division', 'permanentLocation.district', 'permanentLocation.upazila')
+                ->with('presentLocation.division', 'presentLocation.district', 'presentLocation.upazila')
                 ->limit(50) // Get more donors than needed to allow for sorting
                 ->get();
             
@@ -359,21 +359,21 @@ class BloodRequestController extends Controller
                 ];
                 
                 // Calculate location match for sorting
-                if ($donor->permanentLocation) {
+                if ($donor->presentLocation) {
                     // Add location data to result
-                    $result['permanent_division'] = $donor->permanentLocation->division ? $donor->permanentLocation->division->name : null;
-                    $result['permanent_district'] = $donor->permanentLocation->district ? $donor->permanentLocation->district->name : null;
-                    $result['permanent_upazila'] = $donor->permanentLocation->upazila ? $donor->permanentLocation->upazila->name : null;
-                    $result['permanent_address'] = $donor->permanentLocation->address;
+                    $result['present_division'] = $donor->presentLocation->division ? $donor->presentLocation->division->name : null;
+                    $result['present_district'] = $donor->presentLocation->district ? $donor->presentLocation->district->name : null;
+                    $result['present_upazila'] = $donor->presentLocation->upazila ? $donor->presentLocation->upazila->name : null;
+                    $result['present_address'] = $donor->presentLocation->address;
                     
                     // Calculate priority score
-                    if ($requestUpazilaId && $donor->permanentLocation->upazila_id == $requestUpazilaId) {
+                    if ($requestUpazilaId && $donor->presentLocation->upazila_id == $requestUpazilaId) {
                         $result['location_match'] = 3; // Same upazila (highest match)
                         $result['sort_priority'] = 1;
-                    } else if ($requestDistrictId && $donor->permanentLocation->district_id == $requestDistrictId) {
+                    } else if ($requestDistrictId && $donor->presentLocation->district_id == $requestDistrictId) {
                         $result['location_match'] = 2; // Same district
                         $result['sort_priority'] = 2;
-                    } else if ($requestDivisionId && $donor->permanentLocation->division_id == $requestDivisionId) {
+                    } else if ($requestDivisionId && $donor->presentLocation->division_id == $requestDivisionId) {
                         $result['location_match'] = 1; // Same division
                         $result['sort_priority'] = 3;
                     } else {
@@ -381,10 +381,10 @@ class BloodRequestController extends Controller
                     }
                 } else {
                     // Fallback to accessor methods if location relationship doesn't exist
-                    $result['permanent_division'] = $donor->getPermanentDivisionAttribute();
-                    $result['permanent_district'] = $donor->getPermanentDistrictAttribute();
-                    $result['permanent_upazila'] = $donor->getPermanentSubDistrictAttribute();
-                    $result['permanent_address'] = $donor->getPermanentAddressAttribute();
+                    $result['present_division'] = $donor->getPresentDivisionAttribute();
+                    $result['present_district'] = $donor->getPresentDistrictAttribute();
+                    $result['present_upazila'] = $donor->getPresentSubDistrictAttribute();
+                    $result['present_address'] = $donor->getPresentAddressAttribute();
                     $result['sort_priority'] = 4;
                 }
                 

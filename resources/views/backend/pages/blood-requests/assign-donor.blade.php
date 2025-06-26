@@ -787,16 +787,22 @@ Assign Donor - Blood Request #{{ $bloodRequest->id }}
                                             <div class="location-info">
                                                 <div class="location-primary">
                                                     <i class="fa fa-map-marker"></i> 
-                                                    {{ is_object($donor->permanentDistrict) ? $donor->permanentDistrict->name : (is_string($donor->permanentDistrict) ? $donor->permanentDistrict : 'N/A') }}
+                                                    {{ is_object($donor->presentDistrict) ? $donor->presentDistrict->name : (is_string($donor->presentDistrict) ? $donor->presentDistrict : 'N/A') }}
                                                 </div>
                                                 <div class="location-detail">
-                                                    {{ is_object($donor->permanentUpazila) ? $donor->permanentUpazila->name : (is_string($donor->permanentUpazila) ? $donor->permanentUpazila : '') }}
-                                                    {{ $donor->permanent_address ? ', '.$donor->permanent_address : '' }}
+                                                    {{ is_object($donor->presentUpazila) ? $donor->presentUpazila->name : (is_string($donor->presentUpazila) ? $donor->presentUpazila : '') }}
+                                                    {{ $donor->present_address ? ', '.$donor->present_address : '' }}
                                                 </div>
-                                                @if($donor->permanentDivision)
-                                                <div class="location-division">
-                                                    {{ is_object($donor->permanentDivision) ? $donor->permanentDivision->name : (is_string($donor->permanentDivision) ? $donor->permanentDivision : '') }} Division
-                                                </div>
+                                                @if($donor->presentLocation)
+                                                    {{ $donor->presentLocation->division->name ?? '' }}
+                                                    {{ $donor->presentLocation->district->name ? ', '.$donor->presentLocation->district->name : '' }}
+                                                    {{ $donor->presentLocation->upazila->name ? ', '.$donor->presentLocation->upazila->name : '' }}
+                                                    {{ $donor->presentLocation->address ? ', '.$donor->presentLocation->address : '' }}
+                                                @else
+                                                    {{ $donor->present_division ?? '' }}
+                                                    {{ $donor->present_district ? ', '.$donor->present_district : '' }}
+                                                    {{ $donor->present_upazila ? ', '.$donor->present_upazila : '' }}
+                                                    {{ $donor->present_address ? ', '.$donor->present_address : '' }}
                                                 @endif
                                             </div>
                                         </td>
@@ -858,7 +864,7 @@ Assign Donor - Blood Request #{{ $bloodRequest->id }}
                                                     data-donor-name="{{ $donor->name }}"
                                                     data-donor-phone="{{ $donor->phone }}"
                                                     data-donor-blood="{{ $donor->blood_group }}"
-                                                    data-donor-address="{{ is_object($donor->permanentDistrict) ? $donor->permanentDistrict->name : (is_string($donor->permanentDistrict) ? $donor->permanentDistrict : '') }}"
+                                                    data-donor-address="{{ is_object($donor->presentDistrict) ? $donor->presentDistrict->name : (is_string($donor->presentDistrict) ? $donor->presentDistrict : '') }}"
                                                     data-donor-eligible="{{ $isEligible }}"
                                                     title="Assign {{ $donor->name }} to this request"
                                                 >

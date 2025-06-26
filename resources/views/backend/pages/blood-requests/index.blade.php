@@ -1046,18 +1046,18 @@ Blood Requests
                     let addressDetail = '';
                     
                     // Build location display
-                    if (donor.permanent_district || donor.permanent_division) {
-                        const district = donor.permanent_district || '';
-                        const division = donor.permanent_division || '';
+                    if (donor.present_district || donor.present_division) {
+                        const district = donor.present_district || '';
+                        const division = donor.present_division || '';
                         locationInfo = `<i class="fa fa-map-marker-alt mr-1"></i> ${district}${division ? ', ' + division : ''}`;
                     }
                     
                     // Build detailed address (only if the data is available)
                     try {
-                        if ((donor.permanent_address !== undefined && donor.permanent_address) || 
-                            (donor.permanent_upazila !== undefined && donor.permanent_upazila)) {
-                            const upazila = donor.permanent_upazila || '';
-                            const address = donor.permanent_address || '';
+                        if ((donor.present_address !== undefined && donor.present_address) || 
+                            (donor.present_upazila !== undefined && donor.present_upazila)) {
+                            const upazila = donor.present_upazila || '';
+                            const address = donor.present_address || '';
                             
                             if (upazila || address) {
                                 addressDetail = `
