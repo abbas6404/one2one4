@@ -76,6 +76,21 @@
                     </li>
                     @endif
 
+                    @if ($usr->can('contact.view') || $usr->can('contact.update') || $usr->can('contact.delete'))
+                    <li>
+                        <a href="javascript:void(0)" aria-expanded="true">
+                            <i class="fa fa-envelope"></i><span>Contact Messages</span>
+                        </a>
+                        <ul class="collapse {{ Route::is('admin.contacts.*') ? 'in' : '' }}">
+                            @if ($usr->can('contact.view'))
+                            <li class="{{ Route::is('admin.contacts.index') || Route::is('admin.contacts.show') ? 'active' : '' }}">
+                                <a href="{{ route('admin.contacts.index') }}">All Messages</a>
+                            </li>
+                            @endif
+                        </ul>
+                    </li>
+                    @endif
+
                     @if ($usr->can('location.view'))
                     <li>
                         <a href="{{ route('admin.locations.index') }}" aria-expanded="true">
@@ -106,6 +121,26 @@
                             <li class="{{ Route::is('admin.blood_donations.index') ? 'active' : '' }}">
                                 <a href="{{ route('admin.blood_donations.index') }}">All Blood Donations</a>
                             </li>
+                        </ul>
+                    </li>
+                    @endif
+
+                    @if ($usr->can('internal.program.view') || $usr->can('internal.program.create') || $usr->can('internal.program.edit'))
+                    <li>
+                        <a href="javascript:void(0)" aria-expanded="true">
+                            <i class="fa fa-users"></i><span>Internal Programs</span>
+                        </a>
+                        <ul class="collapse {{ Route::is('admin.internal-programs.*') ? 'in' : '' }}">
+                            @if ($usr->can('internal.program.view'))
+                                <li class="{{ Route::is('admin.internal-programs.index') || Route::is('admin.internal-programs.show') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.internal-programs.index') }}">All Programs</a>
+                                </li>
+                            @endif
+                            @if ($usr->can('internal.program.create'))
+                                <li class="{{ Route::is('admin.internal-programs.create') ? 'active' : '' }}">
+                                    <a href="{{ route('admin.internal-programs.create') }}">Add New Program</a>
+                                </li>
+                            @endif
                         </ul>
                     </li>
                     @endif

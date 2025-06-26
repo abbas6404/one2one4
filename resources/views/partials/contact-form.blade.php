@@ -79,12 +79,6 @@
         <div class="col-md-7">
             <div class="contact-form-wrapper">
                 <h3 class="form-title">{{ $form_title ?? 'Send us a Message' }}</h3>
-                @if(session('success'))
-                <div class="alert alert-success alert-dismissible fade show" role="alert">
-                    {{ session('success') }}
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-                @endif
                 <form id="contactForm" action="{{ route('contact.store') }}" method="POST">
                     @csrf
                     <div class="row g-3">
@@ -143,4 +137,37 @@
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">
+                    <i class="fas fa-check-circle me-2"></i> Success
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center py-4">
+                <div class="mb-4">
+                    <i class="fas fa-envelope-open-text text-success" style="font-size: 3rem;"></i>
+                </div>
+                <h4>Thank You!</h4>
+                <p class="mb-0">{{ session('success') ?? 'Your message has been sent successfully! We will get back to you soon.' }}</p>
+            </div>
+            <div class="modal-footer justify-content-center">
+                <button type="button" class="btn btn-success px-4" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@if(session('success'))
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var successModal = new bootstrap.Modal(document.getElementById('successModal'));
+        successModal.show();
+    });
+</script>
+@endif 

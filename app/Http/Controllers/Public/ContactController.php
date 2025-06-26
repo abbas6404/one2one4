@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Contact;
 use App\Models\WebsiteContent;
+use Illuminate\Support\Facades\Mail;
 
 class ContactController extends Controller
 {
@@ -52,6 +53,24 @@ class ContactController extends Controller
 
         // Save to database
         Contact::create($validatedData);
+        
+        // Send email notification
+        try {
+            // Get the admin email from website content or use default
+            $adminEmail = WebsiteContent::where('key', 'contact.info.email')
+                ->where('is_active', 1)
+                ->value('content') ?? 'info@one2one4.com';
+            
+            // Send a simple email with the contact form data
+            Mail::send('emails.contact', $validatedData, function($message) use ($validatedData, $adminEmail) {
+                $message->to($adminEmail)
+                    ->subject('New Contact Form Submission: ' . $validatedData['subject'])
+                    ->from('info@one2one4.com', 'One2One4 Contact Form');
+            });
+        } catch (\Exception $e) {
+            // Log the error but don't show to the user
+            \Log::error('Failed to send contact form email: ' . $e->getMessage());
+        }
 
         // Redirect back with a success message
         return redirect()->back()->with('success', 'Your message has been sent successfully! We will get back to you soon.');

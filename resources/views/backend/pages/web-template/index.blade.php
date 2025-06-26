@@ -208,6 +208,11 @@
                                 <i class="fa fa-envelope"></i> Contact
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" id="internal-programs-tab" data-toggle="tab" href="#internal-programs" role="tab" aria-controls="internal-programs" aria-selected="false">
+                                <i class="fa fa-calendar-check-o"></i> Internal Programs
+                            </a>
+                        </li>
 
                     </ul>
 
@@ -765,6 +770,48 @@
                                 </div>
                                 
                                 <button type="submit" class="btn btn-primary save-btn">Save Contact Settings</button>
+                            </form>
+                        </div>
+
+                        <!-- Internal Programs Tab Content -->
+                        <div class="tab-pane fade content-section" id="internal-programs" role="tabpanel" aria-labelledby="internal-programs-tab">
+                            <h5 class="mb-4">Internal Programs Settings</h5>
+                            <form id="internal-programs-form" method="POST" action="{{ route('admin.web-template.update') }}">
+                                @csrf
+                                <input type="hidden" name="section" value="internal_program">
+                                
+                                <div class="form-row">
+                                    <div class="form-group col-md-6">
+                                        <label for="internal_program_title">Page Title</label>
+                                        <input type="text" class="form-control" id="internal_program_title" name="content[internal_program.title]" value="{{ get_website_content('internal_program.title') }}">
+                                    </div>
+                                    <div class="form-group col-md-6">
+                                        <label for="internal_program_subtitle">Page Subtitle</label>
+                                        <input type="text" class="form-control" id="internal_program_subtitle" name="content[internal_program.subtitle]" value="{{ get_website_content('internal_program.subtitle') }}">
+                                    </div>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="internal_program_description">Program Description</label>
+                                    <textarea class="form-control" id="internal_program_description" name="content[internal_program.description]" rows="4">{{ get_website_content('internal_program.description') }}</textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="internal_program_registration_title">Registration Section Title</label>
+                                    <input type="text" class="form-control" id="internal_program_registration_title" name="content[internal_program.registration.title]" value="{{ get_website_content('internal_program.registration.title') }}">
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="internal_program_payment_instructions">Payment Instructions</label>
+                                    <textarea class="form-control" id="internal_program_payment_instructions" name="content[internal_program.payment.instructions]" rows="3">{{ get_website_content('internal_program.payment.instructions') }}</textarea>
+                                </div>
+                                
+                                <div class="form-group">
+                                    <label for="internal_program_contact_info">Contact Information</label>
+                                    <textarea class="form-control" id="internal_program_contact_info" name="content[internal_program.contact.info]" rows="3">{{ get_website_content('internal_program.contact.info') }}</textarea>
+                                </div>
+                                
+                                <button type="submit" class="btn btn-primary save-btn">Save Internal Program Settings</button>
                             </form>
                         </div>
 

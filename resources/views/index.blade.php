@@ -294,10 +294,35 @@
                                </div>
         
         <div class="sponsor-cta text-center mt-5">
-            <a href="{{ $websiteContent['site.sponsors.cta.url'] ?? '#' }}" class="btn btn-become-sponsor">
+            <a href="javascript:void(0)" class="btn btn-become-sponsor" id="sponsor-btn">
                 <i class="fas fa-handshake me-2"></i> {{ $websiteContent['site.sponsors.cta.text'] ?? 'Become a Sponsor' }}
             </a>
                            </div>
+        
+        <!-- Sponsor Contact Modal -->
+        <div class="modal fade" id="sponsorModal" tabindex="-1" aria-labelledby="sponsorModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="sponsorModalLabel">Become a Sponsor</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <p class="text-center">Please contact admin for sponsorship opportunities.</p>
+                        <div class="text-center mt-3">
+                            <i class="fas fa-envelope fa-2x text-primary mb-2"></i>
+                            <p>{{ app('website-content')->get('footer.contact.email', 'info@one2one4.org') }}</p>
+                            
+                            <i class="fas fa-phone fa-2x text-primary mb-2 mt-3"></i>
+                            <p>{{ app('website-content')->get('footer.contact.phone', '+880 1234 567890') }}</p>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    </div>
+                </div>
+            </div>
+        </div>
                                    </div>
 </section>
 
@@ -2362,6 +2387,11 @@ document.addEventListener('DOMContentLoaded', function() {
 <!-- Add AJAX script for location dropdowns -->
 <script>
     $(document).ready(function() {
+        // Sponsor button click event
+        $('#sponsor-btn').on('click', function() {
+            $('#sponsorModal').modal('show');
+        });
+        
         // When division changes
         $('#division_id').change(function() {
             let divisionId = $(this).val();

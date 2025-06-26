@@ -47,6 +47,8 @@ Route::get('/gallery', [App\Http\Controllers\Public\GalleryController::class, 'i
 Route::get('/gallery/filter/{category?}', [App\Http\Controllers\Public\GalleryController::class, 'filter'])->name('gallery.filter');
 Route::get('/gallery/{slug}', [App\Http\Controllers\Public\GalleryController::class, 'show'])->name('gallery.show');
 Route::get('/internal-program', [ProgramController::class, 'index'])->name('internal.program');
+Route::get('/internal-program-registration', [App\Http\Controllers\Public\InternalProgramController::class, 'showRegistrationForm'])->name('internal-program.registration');
+Route::post('/internal-program-registration', [App\Http\Controllers\Public\InternalProgramController::class, 'register'])->name('internal-program.register');
 Route::get('/contact', [App\Http\Controllers\Public\ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [App\Http\Controllers\Public\ContactController::class, 'submit'])->name('contact.store');
 Route::get('/emergency', [App\Http\Controllers\Public\EmergencyController::class, 'index'])->name('emergency');

@@ -36,6 +36,9 @@
                         <a class="nav-link {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">PROGRAM</a>
                     </li>
                     <li class="nav-item">
+                        <a class="nav-link {{ request()->routeIs('internal-program.registration') ? 'active' : '' }}" href="{{ route('internal-program.registration') }}">INTERNAL PROGRAMS</a>
+                    </li>
+                    <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('emergency') ? 'active' : '' }}" href="{{ route('emergency') }}">EMERGENCY</a>
                     </li>
                     <li class="nav-item">
@@ -92,6 +95,12 @@
                         <a href="{{ route('gallery') }}" class="mobile-nav-link">
                             <i class="fas fa-images"></i>
                             <span>PROGRAM</span>
+                        </a>
+                    </li>
+                    <li class="mobile-nav-item {{ request()->routeIs('internal-program.registration') ? 'active' : '' }}">
+                        <a href="{{ route('internal-program.registration') }}" class="mobile-nav-link">
+                            <i class="fas fa-calendar-check"></i>
+                            <span>INTERNAL PROGRAMS</span>
                         </a>
                     </li>
                     <li class="mobile-nav-item {{ request()->routeIs('emergency') ? 'active' : '' }}">

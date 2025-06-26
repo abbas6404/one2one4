@@ -18,6 +18,9 @@ use App\Http\Controllers\Backend\SponsorController;
 use App\Http\Controllers\Backend\MilestoneController;
 use App\Http\Controllers\Backend\TeamController;
 use App\Http\Controllers\Backend\EventController;
+use App\Http\Controllers\Backend\InternalProgramController;
+use App\Http\Controllers\Backend\ProfileController;
+use App\Http\Controllers\Backend\ContactController;
 
 /*
 |--------------------------------------------------------------------------
@@ -49,6 +52,10 @@ Route::prefix('admin')->group(function () {
         
         // Admin Logout
         Route::post('logout', [LoginController::class, 'logout'])->name('admin.logout');
+        
+        // Admin Profile Routes
+        Route::get('profile/change-password', [ProfileController::class, 'showChangePasswordForm'])->name('admin.profile.change-password');
+        Route::post('profile/change-password', [ProfileController::class, 'changePassword']);
 
     // Admin Resource Routes
         Route::resource('roles', RolesController::class)->names([
@@ -235,5 +242,28 @@ Route::prefix('admin')->group(function () {
             'update' => 'admin.events.update',
             'destroy' => 'admin.events.destroy',
         ]);
+        
+        // Internal Programs Management
+        Route::prefix('internal-programs')->group(function () {
+            Route::get('/', [InternalProgramController::class, 'index'])->name('admin.internal-programs.index');
+            Route::get('/create', [InternalProgramController::class, 'create'])->name('admin.internal-programs.create');
+            Route::post('/', [InternalProgramController::class, 'store'])->name('admin.internal-programs.store');
+            Route::get('/{internalProgram}', [InternalProgramController::class, 'show'])->name('admin.internal-programs.show');
+            Route::get('/{internalProgram}/edit', [InternalProgramController::class, 'edit'])->name('admin.internal-programs.edit');
+            Route::put('/{internalProgram}', [InternalProgramController::class, 'update'])->name('admin.internal-programs.update');
+            
+            // Additional Internal Program Routes
+            Route::patch('/{internalProgram}/update-status', [InternalProgramController::class, 'updateStatus'])
+                ->name('admin.internal-programs.update_status');
+        });
+
+        // Contact Messages
+        Route::resource('contacts', ContactController::class)->except(['create', 'edit', 'store'])->names([
+            'index' => 'admin.contacts.index',
+            'show' => 'admin.contacts.show',
+            'update' => 'admin.contacts.update',
+            'destroy' => 'admin.contacts.destroy',
+        ]);
+        Route::post('contacts/{contact}/reply', [ContactController::class, 'reply'])->name('admin.contacts.reply');
     });
 }); 

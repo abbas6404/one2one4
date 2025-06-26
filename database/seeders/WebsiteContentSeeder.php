@@ -496,6 +496,37 @@ class WebsiteContentSeeder extends Seeder
                 'key' => 'gallery.per_page',
                 'content' => '9',
                 'is_active' => true,
+            ],
+            // Internal Programs Page Content
+            [
+                'key' => 'internal_program.title',
+                'content' => 'Internal Programs Registration',
+                'is_active' => true,
+            ],
+            [
+                'key' => 'internal_program.subtitle',
+                'content' => 'Join our exclusive internal programs for SSC-12 & HSC-14 batch members',
+                'is_active' => true,
+            ],
+            [
+                'key' => 'internal_program.description',
+                'content' => 'Our internal programs are designed specifically for our batch members to strengthen our community bonds, promote blood donation awareness, and engage in social welfare activities. Register below to participate in upcoming events and receive your exclusive batch T-shirt.',
+                'is_active' => true,
+            ],
+            [
+                'key' => 'internal_program.registration.title',
+                'content' => 'Program Registration',
+                'is_active' => true,
+            ],
+            [
+                'key' => 'internal_program.payment.instructions',
+                'content' => 'Please complete your registration by making a payment of 500 BDT using one of the available payment methods. Upload a screenshot of your payment for verification.',
+                'is_active' => true,
+            ],
+            [
+                'key' => 'internal_program.contact.info',
+                'content' => 'For any queries regarding registration or payment, please contact our program coordinator at +880 1234-567890 or email at programs@one2one4.org',
+                'is_active' => true,
             ]
         ];
 

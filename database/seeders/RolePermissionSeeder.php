@@ -186,6 +186,26 @@ class RolePermissionSeeder extends Seeder
                     'event.delete',
                 ]
             ],
+            [
+                'group_name' => 'internal_program',
+                'permissions' => [
+                    // Internal Program Management Permissions
+                    'internal.program.view',
+                    'internal.program.create',
+                    'internal.program.edit',
+                ]
+            ],
+            
+            [
+                'group_name' => 'contact',
+                'permissions' => [
+                    // Contact Message Management Permissions
+                    'contact.view',
+                    'contact.update',
+                    'contact.delete',
+                ]
+            ],
+            
             
             
             

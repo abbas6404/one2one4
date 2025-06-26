@@ -25,7 +25,7 @@ return new class extends Migration
             $table->timestamps();
 
             // Contact Information
-            $table->string('phone')->nullable();
+            $table->string('phone')->unique();
             $table->date('dob')->nullable();
             
             // Profile Information
