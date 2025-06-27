@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="OneTwoOneFour - Blood Donation Platform for SSC 2012 & HSC 2014 Batch">
-    <meta name="author" content="AiO Innovation Limited">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     
-    <title>@yield('title', 'OneTwoOneFour') | Blood Donation</title>
+    <!-- SEO Meta Tags -->
+    {!! Seo::generateMetaTags() !!}
+    
+    <title>@yield('title', Seo::getTitle())</title>
     
     <!-- Favicon -->
     <link rel="icon" href="{{ asset('images/favicon.png') }}" type="image/png">
+    <link rel="apple-touch-icon" href="{{ asset('images/apple-touch-icon.png') }}">
     
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,13 +26,31 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
     
     @stack('styles')
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {!! Seo::getStructuredData() !!}
+    </script>
+    
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-XXXXXXXXXX"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-XXXXXXXXXX');
+    </script>
 </head>
 <body>
     @include('partials.header')
     
     <!-- Main Content -->
     <main>
-        @yield('content')
+        @if(isset($content))
+            {!! $content !!}
+        @else
+            @yield('content')
+        @endif
     </main>
     
     @include('partials.footer')

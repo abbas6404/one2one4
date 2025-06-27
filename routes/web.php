@@ -16,6 +16,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Frontend\LocationController;
 use App\Http\Controllers\Frontend\MyDonorsController;
 use App\Http\Controllers\Public\EventController;
+use App\Facades\Seo;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +53,22 @@ Route::post('/internal-program-registration', [App\Http\Controllers\Public\Inter
 Route::get('/contact', [App\Http\Controllers\Public\ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [App\Http\Controllers\Public\ContactController::class, 'submit'])->name('contact.store');
 Route::get('/emergency', [App\Http\Controllers\Public\EmergencyController::class, 'index'])->name('emergency');
+
+// SEO Test Route
+Route::get('/seo-test', function() {
+    // Set custom SEO data for this page
+    Seo::setData([
+        'title' => 'SEO Test Page | One2One4',
+        'description' => 'This is a test page to demonstrate the SEO middleware functionality.',
+        'keywords' => 'seo test, middleware test, one2one4 seo',
+        'image' => asset('images/social-share.jpg'),
+        'type' => 'article',
+    ]);
+    
+    return view('layouts.public-layout', [
+        'content' => '<div class="container py-5"><h1>SEO Test Page</h1><p>This page demonstrates the SEO middleware functionality.</p><p>View the page source to see the generated meta tags.</p></div>'
+    ]);
+})->middleware('seo')->name('seo.test');
 
 // Event Routes
 Route::get('/events', [EventController::class, 'index'])->name('events.index');

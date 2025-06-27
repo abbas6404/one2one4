@@ -2,6 +2,14 @@
 
 @section('title', 'About Us')
 
+<x-seo-meta 
+    title="About Us | One2One4 Blood Donation"
+    description="Learn about One2One4, Bangladesh's largest blood donation network operating in every upazila. Our mission is to connect blood donors with recipients to save lives across Bangladesh."
+    keywords="blood donation organization, Bangladesh blood donation, One2One4 history, blood donation mission, upazila blood donation network, blood donor community"
+    image="{{ asset('images/about-history.jpg') }}"
+    type="organization"
+/>
+
 @push('styles')
 <style>
     /* Hero Section */

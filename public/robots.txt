@@ -1,2 +1,22 @@
 User-agent: *
-Disallow:
+Allow: /
+Disallow: /admin/
+Disallow: /backend/
+Disallow: /login
+Disallow: /register
+Disallow: /password/
+Disallow: /email/
+Disallow: /api/
+Disallow: /frontend/dashboard/
+Disallow: /frontend/profile/
+Disallow: /frontend/settings/
+
+# Allow important pages
+Allow: /about
+Allow: /contact
+Allow: /donors
+Allow: /emergency
+Allow: /gallery
+
+# Sitemap
+Sitemap: https://one2one4.com/sitemap.xml

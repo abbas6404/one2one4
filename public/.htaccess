@@ -14,8 +14,40 @@
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
+    # Redirect non-www to www
+    RewriteCond %{HTTP_HOST} ^one2one4\.com [NC]
+    RewriteRule ^(.*)$ https://www.one2one4.com/$1 [L,R=301]
+
+    # Redirect HTTP to HTTPS
+    RewriteCond %{HTTPS} off
+    RewriteRule ^(.*)$ https://%{HTTP_HOST}%{REQUEST_URI} [L,R=301]
+
     # Send Requests To Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
+    
+    # Set Cache-Control Headers
+    <IfModule mod_headers.c>
+        # Cache CSS, JS, and web fonts for 1 week
+        <FilesMatch "\.(css|js|woff2?|eot|ttf|otf)$">
+            Header set Cache-Control "public, max-age=604800"
+        </FilesMatch>
+        
+        # Cache images for 1 month
+        <FilesMatch "\.(ico|gif|jpg|jpeg|png|svg|webp)$">
+            Header set Cache-Control "public, max-age=2592000"
+        </FilesMatch>
+    </IfModule>
 </IfModule>
+
+# Enable GZIP Compression
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css application/javascript application/json application/xml
+    BrowserMatch ^Mozilla/4 gzip-only-text/html
+    BrowserMatch ^Mozilla/4\.0[678] no-gzip
+    BrowserMatch \bMSIE !no-gzip !gzip-only-text/html
+</IfModule>
+
+# Set default charset
+AddDefaultCharset UTF-8
