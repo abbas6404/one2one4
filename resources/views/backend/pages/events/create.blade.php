@@ -188,8 +188,8 @@
                         <!-- Image Section -->
                         <div class="card-header">
                             <h5 class="mb-0">Event Image</h5>
-                        </div>
-                        
+                                </div>
+                                
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-group">
@@ -202,8 +202,8 @@
                                 </div>
                             </div>
                             <div class="col-md-6">
-                                <div class="image-preview mt-3" id="imagePreview" style="display: none;">
-                                    <img src="#" alt="Image Preview" id="preview-image">
+                                    <div class="image-preview mt-3" id="imagePreview" style="display: none;">
+                                        <img src="#" alt="Image Preview" id="preview-image">
                                 </div>
                             </div>
                         </div>

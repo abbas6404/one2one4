@@ -616,4 +616,20 @@ class BloodRequestController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Get blood request information for AJAX requests
+     *
+     * @param BloodRequest $bloodRequest
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function getInfo(BloodRequest $bloodRequest)
+    {
+        return response()->json([
+            'units_needed' => $bloodRequest->units_needed,
+            'urgency_level' => $bloodRequest->urgency_level,
+            'needed_date' => $bloodRequest->needed_date ? $bloodRequest->needed_date->format('Y-m-d') : null,
+            'status' => $bloodRequest->status
+        ]);
+    }
 } 

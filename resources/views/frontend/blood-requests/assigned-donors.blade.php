@@ -64,6 +64,7 @@
                                 <th>Contact</th>
                                 <th>Status</th>
                                 <th>Assigned Date</th>
+                                <th>Notes</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -99,6 +100,13 @@
                                         </span>
                                     </td>
                                     <td>{{ $donation->created_at->format('M d, Y') }}</td>
+                                    <td>
+                                        @if($donation->status === 'rejected' && $donation->rejection_reason)
+                                            <div class="rejection-reason text-danger">
+                                                <small><i class="fas fa-exclamation-circle"></i> {{ $donation->rejection_reason }}</small>
+                                            </div>
+                                        @endif
+                                    </td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -139,6 +147,15 @@
     
     .table td {
         vertical-align: middle;
+    }
+    
+    /* Add styles for rejection reason */
+    .rejection-reason {
+        padding: 3px 6px;
+        background-color: rgba(220, 53, 69, 0.1);
+        border-radius: 4px;
+        font-size: 12px;
+        display: inline-block;
     }
 </style>
 @endpush

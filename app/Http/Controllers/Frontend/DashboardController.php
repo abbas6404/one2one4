@@ -27,7 +27,7 @@ class DashboardController extends Controller
         
         // Calculate eligibility based on last_donation_date from users table
         if ($user->last_donation_date) {
-            $nextEligibleDate = Carbon::parse($user->last_donation_date)->addMonths(3);
+            $nextEligibleDate = Carbon::parse($user->last_donation_date)->addMonths(4);
             $stats['days_until_eligible'] = (int)max(0, now()->diffInDays($nextEligibleDate, false));
             $stats['is_eligible'] = now()->greaterThanOrEqualTo($nextEligibleDate);
         } else {

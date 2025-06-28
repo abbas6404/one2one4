@@ -87,13 +87,16 @@ Route::group(['middleware' => ['auth'], 'prefix' => 'user', 'as' => 'user.'], fu
     Route::get('/dashboard', [App\Http\Controllers\Frontend\DashboardController::class, 'index'])->name('dashboard');
     Route::get('/donation-history', [App\Http\Controllers\Frontend\DonationController::class, 'index'])->name('donation.history');
     
-    Route::get('/calendar', function () {
-        return view('frontend.calendar.index');
-    })->name('calendar');
+    // Calendar Routes
+    Route::get('/calendar', [App\Http\Controllers\Frontend\CalendarController::class, 'index'])->name('calendar');
+    Route::get('/calendar/change-month', [App\Http\Controllers\Frontend\CalendarController::class, 'changeMonth'])->name('calendar.change-month');
     
-    Route::get('/notifications', function () {
-        return view('frontend.notifications.index');
-    })->name('notifications');
+    Route::get('/notifications', [App\Http\Controllers\Frontend\NotificationsController::class, 'index'])->name('notifications');
+    Route::post('/notifications/{id}/mark-read', [App\Http\Controllers\Frontend\NotificationsController::class, 'markAsRead'])->name('notifications.mark-read');
+    Route::post('/notifications/mark-all-read', [App\Http\Controllers\Frontend\NotificationsController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
+    Route::delete('/notifications/{id}', [App\Http\Controllers\Frontend\NotificationsController::class, 'delete'])->name('notifications.delete');
+    Route::delete('/notifications', [App\Http\Controllers\Frontend\NotificationsController::class, 'deleteAll'])->name('notifications.delete-all');
+    Route::get('/notifications/filter', [App\Http\Controllers\Frontend\NotificationsController::class, 'filter'])->name('notifications.filter');
     
     Route::get('/settings', function () {
         return view('frontend.settings.index');
@@ -159,4 +162,15 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['auth:admi
 
     // Roles Routes
     Route::resource('roles', App\Http\Controllers\Backend\RolesController::class);
+
+    // Donor search routes
+    Route::get('donors/search', 'App\Http\Controllers\Backend\DonorController@search')->name('donors.search');
+    Route::get('donors/get', 'App\Http\Controllers\Backend\DonorController@get')->name('donors.get');
+    
+    // Blood request search routes
+    Route::get('blood-requests/search', 'App\Http\Controllers\Backend\BloodRequestSearchController@search')->name('blood_requests.search');
+    Route::get('blood-requests/get', 'App\Http\Controllers\Backend\BloodRequestSearchController@get')->name('blood_requests.get');
+
+    // Blood request info route for AJAX
+    Route::get('blood-requests/{bloodRequest}/info', 'App\Http\Controllers\Backend\BloodRequestController@getInfo');
 });

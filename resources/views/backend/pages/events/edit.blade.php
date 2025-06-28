@@ -189,8 +189,8 @@
                         <!-- Image Section -->
                         <div class="card-header">
                             <h5 class="mb-0">Event Image</h5>
-                        </div>
-                        
+                                </div>
+                                
                         <div class="row mb-4">
                             <div class="col-md-6">
                                 <div class="form-group">

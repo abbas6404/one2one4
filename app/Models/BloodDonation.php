@@ -44,6 +44,45 @@ class BloodDonation extends Model
     ];
 
     /**
+     * Boot the model.
+     */
+    protected static function boot()
+    {
+        parent::boot();
+
+        // Update donor information when donation is completed
+        static::updated(function ($donation) {
+            // If status changed to completed
+            if ($donation->isDirty('status') && $donation->status === self::STATUS_COMPLETED) {
+                if ($donation->donor) {
+                    // Update last donation date
+                    $donation->donor->last_donation_date = $donation->donation_date ?? now();
+                    
+                    // Increment total blood donation count
+                    $donation->donor->total_blood_donation = ($donation->donor->total_blood_donation ?? 0) + 1;
+                    
+                    // Save the donor
+                    $donation->donor->save();
+                }
+            }
+        });
+        
+        // Handle new donations created as completed
+        static::created(function ($donation) {
+            if ($donation->status === self::STATUS_COMPLETED && $donation->donor) {
+                // Update last donation date
+                $donation->donor->last_donation_date = $donation->donation_date ?? now();
+                
+                // Increment total blood donation count
+                $donation->donor->total_blood_donation = ($donation->donor->total_blood_donation ?? 0) + 1;
+                
+                // Save the donor
+                $donation->donor->save();
+            }
+        });
+    }
+
+    /**
      * Get the donor associated with the blood donation.
      */
     public function donor(): BelongsTo

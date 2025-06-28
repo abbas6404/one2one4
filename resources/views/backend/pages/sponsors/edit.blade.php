@@ -293,8 +293,8 @@
                                         @error('phone')
                                             <div class="invalid-feedback">{{ $message }}</div>
                                         @enderror
-                                    </div>
-                                    
+                                </div>
+                                
                                     <div class="form-group">
                                         <label for="email" class="form-label">Email Address</label>
                                         <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $sponsor->email) }}">
@@ -442,11 +442,11 @@
             const file = input.files[0];
             fileName.textContent = file.name;
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
                 container.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Logo Preview">`;
-            }
-            reader.readAsDataURL(file);
+                }
+                reader.readAsDataURL(file);
         } else {
             fileName.textContent = 'No new file selected';
         }

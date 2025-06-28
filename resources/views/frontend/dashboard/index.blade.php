@@ -12,9 +12,9 @@
                 <i class="fas fa-user me-1"></i> Profile
             </a>
             @if($stats['is_eligible'])
-                <a href="{{ route('user.donation.schedule') }}" class="btn donor-gradient text-white">
+                <!-- <a href="{{ route('user.donation.schedule') }}" class="btn donor-gradient text-white">
                     <i class="fas fa-tint me-1"></i> Donate Now
-                </a>
+                </a> -->
             @endif
         </div>
     </div>
@@ -63,7 +63,7 @@
                                 {{ (int)$stats['days_until_eligible'] }} Days
                             @endif
                         </div>
-                        <div class="stats-info">3 months between donations</div>
+                        <div class="stats-info">4 months between donations</div>
                         </div>
                     <div class="stats-icon">
                         <i class="fas fa-calendar-check"></i>
@@ -454,7 +454,7 @@ body {
     left: 0;
     right: 0;
     height: 80px;
-    background: linear-gradient(to right, rgba(220, 53, 69, 0.8), rgba(167, 29, 42, 0.8));
+    background: linear-gradient(to right, rgba(235, 22, 43, 0.8), rgba(39, 28, 197, 0.8));
     z-index: 0;
 }
 

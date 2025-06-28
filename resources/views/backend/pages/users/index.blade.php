@@ -54,7 +54,8 @@ Users - Admin Panel
                                     <th width="10%">Name</th>
                                     <th width="10%">Email/Phone</th>
                                     <th width="10%">Blood Group</th>
-                                    <th width="20%">Location</th>
+                                    <th width="10%">Total Donations</th>
+                                    <th width="15%">Location</th>
                                     <th width="10%">Created By</th>
                                     <th width="15%">Action</th>
                                 </tr>
@@ -71,6 +72,19 @@ Users - Admin Panel
                                         @endif
                                     </td>
                                     <td>{{ $user->blood_group ?? 'N/A' }}</td>
+                                    <td>
+                                        @php
+                                            $totalDonations = App\Models\BloodDonation::where('donor_id', $user->id)
+                                                ->where('status', 'completed')
+                                                ->count();
+                                        @endphp
+                                        <span class="badge badge-{{ $totalDonations > 0 ? 'success' : 'secondary' }}">
+                                            {{ $totalDonations }}
+                                        </span>
+                                        @if($user->last_donation_date)
+                                            <br><small>Last: {{ \Carbon\Carbon::parse($user->last_donation_date)->format('M d, Y') }}</small>
+                                        @endif
+                                    </td>
                                     <td class="text-left">
                                         <small>
                                             {{ $user->getPresentDivisionAttribute() ?? 'N/A' }}, 

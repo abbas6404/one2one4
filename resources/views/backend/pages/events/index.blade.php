@@ -64,11 +64,11 @@
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h4 class="header-title">Events List</h4>
                         <div>
-                            @if (Auth::guard('admin')->user()->can('event.create'))
+                        @if (Auth::guard('admin')->user()->can('event.create'))
                                 <a class="btn btn-primary" href="{{ route('admin.events.create') }}">
                                     <i class="fa fa-plus-circle"></i> Create New Event
                                 </a>
-                            @endif
+                        @endif
                         </div>
                     </div>
                     

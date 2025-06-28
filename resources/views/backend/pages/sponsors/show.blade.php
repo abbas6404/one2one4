@@ -156,7 +156,7 @@
                     <div class="row">
                         <div class="col-md-5">
                             <div class="sponsor-logo-container">
-                                @if ($sponsor->logo)
+                            @if ($sponsor->logo)
                                     <img src="{{ asset($sponsor->logo) }}" alt="{{ $sponsor->name }}" class="sponsor-logo">
                                 @else
                                     <div class="alert alert-warning mb-0">
@@ -196,7 +196,7 @@
                                     <p class="mb-2"><strong>Payment Screenshot:</strong></p>
                                     <img src="{{ asset($sponsor->payment_screenshot) }}" alt="Payment Screenshot" class="payment-screenshot img-fluid" style="max-height: 300px;" data-toggle="modal" data-target="#screenshotModal">
                                 </div>
-                                @endif
+                            @endif
                             </div>
                         </div>
                         
@@ -247,14 +247,14 @@
                                     <td>{{ $sponsor->updated_at->format('d F, Y h:i A') }}</td>
                                 </tr>
                             </table>
-                            
-                            <div class="mt-4">
-                                <div class="alert alert-info">
-                                    <strong>Note:</strong> This sponsor will be displayed on the homepage and other pages where sponsors are shown.
-                                    Make sure the logo is of good quality and appropriate dimensions.
-                                </div>
-                            </div>
+                    
+                    <div class="mt-4">
+                        <div class="alert alert-info">
+                            <strong>Note:</strong> This sponsor will be displayed on the homepage and other pages where sponsors are shown.
+                            Make sure the logo is of good quality and appropriate dimensions.
                         </div>
+                    </div>
+                </div>
                     </div>
                 </div>
             </div>

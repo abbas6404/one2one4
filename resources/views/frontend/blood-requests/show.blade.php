@@ -159,6 +159,31 @@
                     </div>
                 </div>
             </div>
+
+            <div class="list-group small">
+                @foreach($bloodRequest->donations as $donation)
+                    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                        <div>
+                            <div class="fw-bold">{{ $donation->donor->name }}</div>
+                            <span class="badge bg-danger me-1">{{ $donation->donor->blood_group }}</span>
+                            <span class="badge bg-{{ 
+                                $donation->status === 'pending' ? 'warning' : 
+                                ($donation->status === 'completed' ? 'success' : 
+                                ($donation->status === 'rejected' ? 'danger' : 'info')) 
+                            }}">
+                                {{ ucfirst($donation->status) }}
+                            </span>
+                            
+                            @if($donation->status === 'rejected' && $donation->rejection_reason)
+                                <div class="rejection-reason text-danger mt-1">
+                                    <small><i class="fas fa-exclamation-circle"></i> {{ $donation->rejection_reason }}</small>
+                                </div>
+                            @endif
+                        </div>
+                        <small class="text-muted">{{ $donation->created_at->format('M d') }}</small>
+                    </div>
+                @endforeach
+            </div>
         </div>
 
         <!-- Action Buttons -->
@@ -205,6 +230,16 @@
         display: flex;
         align-items: center;
         justify-content: center;
+    }
+    
+    /* Add styles for rejection reason */
+    .rejection-reason {
+        padding: 3px 6px;
+        background-color: rgba(220, 53, 69, 0.1);
+        border-radius: 4px;
+        font-size: 12px;
+        display: inline-block;
+        margin-top: 4px;
     }
 </style>
 @endpush

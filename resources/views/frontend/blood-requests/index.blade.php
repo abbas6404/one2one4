@@ -190,9 +190,14 @@
                                                         <div class="donor-details flex-grow-1">
                                                             <div class="donor-name">{{ $donation->donor->name }}</div>
                                                             <div class="donation-date">Donation: {{ $donation->donation_date ? \Carbon\Carbon::parse($donation->donation_date)->format('M d, Y') : 'Not scheduled' }}</div>
+                                                            @if($donation->status === 'rejected' && $donation->rejection_reason)
+                                                                <div class="rejection-reason text-danger">
+                                                                    <small><i class="fas fa-exclamation-circle"></i> {{ $donation->rejection_reason }}</small>
+                                                                </div>
+                                                            @endif
                                                         </div>
                                                         <div class="donation-status">
-                                                            <span class="status-pill {{ $donation->status === 'completed' ? 'bg-success' : 'bg-info' }}">
+                                                            <span class="status-pill {{ $donation->status === 'completed' ? 'bg-success' : ($donation->status === 'rejected' ? 'bg-danger' : 'bg-info') }}">
                                                                 {{ ucfirst($donation->status) }}
                                                             </span>
                                                         </div>
@@ -212,7 +217,7 @@
                                         </button>
                                         
                                         @if($request->status === 'pending')
-                                        <button type="button" 
+                                        <!-- <button type="button" 
                                                 class="btn btn-action btn-outline-warning" 
                                                 title="Edit Request"
                                                 data-bs-toggle="modal" 
@@ -229,7 +234,7 @@
                                                 data-bs-toggle="modal" 
                                                 data-bs-target="#cancelModal{{ $request->id }}">
                                             <i class="fas fa-trash"></i> Delete
-                                        </button>
+                                        </button> -->
                                         @endif
                                         
                                         @if($request->status === 'approved' || $request->status === 'completed')
@@ -987,6 +992,15 @@
         .modern-card {
             margin-bottom: 25px;
         }
+    }
+    
+    /* Add styles for rejection reason */
+    .rejection-reason {
+        margin-top: 4px;
+        padding: 3px 6px;
+        background-color: rgba(220, 53, 69, 0.1);
+        border-radius: 4px;
+        font-size: 12px;
     }
 </style>
 @endpush

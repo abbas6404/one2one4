@@ -51,6 +51,9 @@ class DatabaseSeeder extends Seeder
             
             // Payment Info
             PaymentInfoSeeder::class,
+            
+            // Notifications
+            BloodNotificationSeeder::class,
         ]);
     }
 }

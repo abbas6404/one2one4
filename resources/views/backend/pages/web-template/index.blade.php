@@ -378,7 +378,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                
+
                                 <div class="row mt-4">
                                     <div class="col-md-12 form-section">
                                         <div class="form-group">
@@ -956,11 +956,11 @@
                 var reader = new FileReader();
                 var previewContainer = $(this).closest('.form-group').find('.logo-preview, .favicon-preview, .slider-preview');
                 
-                reader.onload = function(e) {
+                    reader.onload = function(e) {
                     if (previewContainer.length) {
                         // If preview container exists, update the image
                         if (previewContainer.find('img').length) {
-                            previewContainer.find('img').attr('src', e.target.result);
+                        previewContainer.find('img').attr('src', e.target.result);
                         } else {
                             // Create new image element if it doesn't exist
                             previewContainer.html('<img src="' + e.target.result + '" class="img-thumbnail" style="max-height: 100px">');

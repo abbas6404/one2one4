@@ -72,7 +72,7 @@ class BloodDonationController extends Controller
                 $donation->bloodRequest->update(['status' => 'approved']);
             }
         }
-
+        
         $donation->update($data);
 
         // Update blood request status if needed
@@ -88,7 +88,8 @@ class BloodDonationController extends Controller
     {
         $this->checkAuthorization(auth()->user(), ['blood.donation.create']);
         
-        $bloodRequests = BloodRequest::where('status', '!=', 'completed')->get();
+        // Only show pending and approved blood requests
+        $bloodRequests = BloodRequest::whereIn('status', ['pending', 'approved'])->get();
         $donors = User::where('is_donor', true)->get();
         
         return view('backend.pages.blood-donations.create', compact('bloodRequests', 'donors'));

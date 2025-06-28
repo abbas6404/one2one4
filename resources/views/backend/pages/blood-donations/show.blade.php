@@ -308,6 +308,34 @@ Blood Donation Details - Blood Donation Management System
                                 </div>
                             </div>
                         </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <div class="info-label">Total Donations</div>
+                                    <div class="info-value">
+                                        {{ $bloodDonation->donor->total_blood_donation ?? 0 }}
+                                        @if($bloodDonation->status === 'completed')
+                                            <span class="badge badge-success ml-2">Including this donation</span>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="info-group">
+                                    <div class="info-label">Last Donation Date</div>
+                                    <div class="info-value">
+                                        @if($bloodDonation->donor->last_donation_date)
+                                            {{ $bloodDonation->donor->last_donation_date->format('M d, Y') }}
+                                            @if($bloodDonation->status === 'completed' && $bloodDonation->donation_date && $bloodDonation->donation_date->format('Y-m-d') === $bloodDonation->donor->last_donation_date->format('Y-m-d'))
+                                                <span class="badge badge-info ml-2">This donation</span>
+                                            @endif
+                                        @else
+                                            No previous donations
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                         @else
                         <div class="alert alert-warning">
                             <i class="fa fa-exclamation-triangle"></i> No donor information available
