@@ -915,6 +915,101 @@
                                     </div>
                                 </div>
                                 
+                                <h5 class="mt-4 mb-3">Payment Information</h5>
+                                <div class="alert alert-info mb-3">
+                                    <i class="fa fa-info-circle mr-2"></i> Configure payment methods that will be displayed on your website.
+                                </div>
+                                
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">Mobile Banking</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="payment_bkash_number">bKash Number</label>
+                                                    <input type="text" class="form-control" id="payment_bkash_number" name="content[payment.bKash.number]" value="{{ get_website_content('payment.bKash.number') }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="payment_bkash_type">bKash Account Type</label>
+                                                    <select class="form-control" id="payment_bkash_type" name="content[payment.bKash.type]">
+                                                        <option value="Personal" {{ get_website_content('payment.bKash.type') == 'Personal' ? 'selected' : '' }}>Personal</option>
+                                                        <option value="Agent" {{ get_website_content('payment.bKash.type') == 'Agent' ? 'selected' : '' }}>Agent</option>
+                                                        <option value="Merchant" {{ get_website_content('payment.bKash.type') == 'Merchant' ? 'selected' : '' }}>Merchant</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="payment_nagad_number">Nagad Number</label>
+                                                    <input type="text" class="form-control" id="payment_nagad_number" name="content[payment.Nagad.number]" value="{{ get_website_content('payment.Nagad.number') }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="payment_nagad_type">Nagad Account Type</label>
+                                                    <select class="form-control" id="payment_nagad_type" name="content[payment.Nagad.type]">
+                                                        <option value="Personal" {{ get_website_content('payment.Nagad.type') == 'Personal' ? 'selected' : '' }}>Personal</option>
+                                                        <option value="Agent" {{ get_website_content('payment.Nagad.type') == 'Agent' ? 'selected' : '' }}>Agent</option>
+                                                        <option value="Merchant" {{ get_website_content('payment.Nagad.type') == 'Merchant' ? 'selected' : '' }}>Merchant</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="payment_rocket_number">Rocket Number</label>
+                                                    <input type="text" class="form-control" id="payment_rocket_number" name="content[payment.Rocket.number]" value="{{ get_website_content('payment.Rocket.number') }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="payment_rocket_type">Rocket Account Type</label>
+                                                    <select class="form-control" id="payment_rocket_type" name="content[payment.Rocket.type]">
+                                                        <option value="Personal" {{ get_website_content('payment.Rocket.type') == 'Personal' ? 'selected' : '' }}>Personal</option>
+                                                        <option value="Agent" {{ get_website_content('payment.Rocket.type') == 'Agent' ? 'selected' : '' }}>Agent</option>
+                                                        <option value="Merchant" {{ get_website_content('payment.Rocket.type') == 'Merchant' ? 'selected' : '' }}>Merchant</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="card mb-4">
+                                    <div class="card-header bg-light">
+                                        <h6 class="mb-0">Bank Transfer</h6>
+                                    </div>
+                                    <div class="card-body">
+                                        @php
+                                            $bankDetails = json_decode(get_website_content('payment.Bank_Transfer.details'), true) ?? [
+                                                'bank_name' => '',
+                                                'account_name' => '',
+                                                'account_number' => '',
+                                                'branch' => ''
+                                            ];
+                                        @endphp
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="payment_bank_name">Bank Name</label>
+                                                    <input type="text" class="form-control" id="payment_bank_name" name="json[payment.Bank_Transfer.details][bank_name]" value="{{ $bankDetails['bank_name'] ?? '' }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="payment_account_name">Account Name</label>
+                                                    <input type="text" class="form-control" id="payment_account_name" name="json[payment.Bank_Transfer.details][account_name]" value="{{ $bankDetails['account_name'] ?? '' }}">
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <label for="payment_account_number">Account Number</label>
+                                                    <input type="text" class="form-control" id="payment_account_number" name="json[payment.Bank_Transfer.details][account_number]" value="{{ $bankDetails['account_number'] ?? '' }}">
+                                                </div>
+                                                <div class="form-group">
+                                                    <label for="payment_branch">Branch Name</label>
+                                                    <input type="text" class="form-control" id="payment_branch" name="json[payment.Bank_Transfer.details][branch]" value="{{ $bankDetails['branch'] ?? '' }}">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <button type="submit" class="btn btn-primary save-btn">Save General Settings</button>
                             </form>
                         </div>
