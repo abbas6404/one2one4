@@ -112,6 +112,7 @@ body {
 .main-header .nav-link.active {
     color: var(--primary) !important;
     font-weight: 600;
+    border-bottom: 2px solid var(--primary);
 }
 
 .auth-buttons .btn {

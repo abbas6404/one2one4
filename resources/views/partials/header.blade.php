@@ -33,10 +33,10 @@
                         <a class="nav-link {{ request()->routeIs('donors.index') ? 'active' : '' }}" href="{{ route('donors.index') }}">DONOR LIST</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">PROGRAM</a>
+                        <a class="nav-link {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">GALLERY</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('internal-program.registration') ? 'active' : '' }}" href="{{ route('internal-program.registration') }}">INTERNAL PROGRAMS</a>
+                        <a class="nav-link {{ request()->routeIs('internal-program.registration') ? 'active' : '' }}" href="{{ route('internal-program.registration') }}">EVENT REGISTRATION</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('emergency') ? 'active' : '' }}" href="{{ route('emergency') }}">EMERGENCY</a>
