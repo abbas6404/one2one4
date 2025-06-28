@@ -527,7 +527,10 @@ class WebsiteContentSeeder extends Seeder
                 'key' => 'internal_program.contact.info',
                 'content' => 'For any queries regarding registration or payment, please contact our program coordinator at +880 1234-567890 or email at programs@one2one4.org',
                 'is_active' => true,
-            ]
+            ],
+        
+   
+
         ];
 
         foreach ($contents as $content) {

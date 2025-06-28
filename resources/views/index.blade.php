@@ -1,6 +1,16 @@
 @extends('layouts.public-layout')
 
 @section('content')
+<!-- Success message display -->
+@if(session('success'))
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+    <div class="container">
+        {{ session('success') }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+</div>
+@endif
+
 <!-- Hero Section with Slider -->
 <!-- Hero Section with Slider - All slider images are stored in public/images/slides directory -->
 <section class="custom-hero-section">
@@ -303,22 +313,123 @@
         <div class="modal fade" id="sponsorModal" tabindex="-1" aria-labelledby="sponsorModalLabel" aria-hidden="true">
             <div class="modal-dialog modal-dialog-centered">
                 <div class="modal-content">
-                    <div class="modal-header">
-                        <h5 class="modal-title" id="sponsorModalLabel">Become a Sponsor</h5>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    <div class="modal-header bg-primary text-white">
+                        <h5 class="modal-title" id="sponsorModalLabel"><i class="fas fa-handshake me-2"></i>Become a Sponsor</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <p class="text-center">Please contact admin for sponsorship opportunities.</p>
-                        <div class="text-center mt-3">
-                            <i class="fas fa-envelope fa-2x text-primary mb-2"></i>
-                            <p>{{ app('website-content')->get('footer.contact.email', 'info@one2one4.org') }}</p>
+                        <form id="sponsorForm" action="{{ route('sponsor.register') }}" method="POST" enctype="multipart/form-data">
+                            @csrf
+                            <div class="mb-3">
+                                <label for="name" class="form-label fw-bold">Name <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="phone" class="form-label fw-bold">Phone Number <span class="text-danger">*</span></label>
+                                <input type="text" class="form-control" id="phone" name="phone" required>
+                                <div class="invalid-feedback"></div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address (Optional)</label>
+                                <input type="email" class="form-control" id="email" name="email">
+                               
+                                <div class="invalid-feedback"></div>
+                            </div>
                             
-                            <i class="fas fa-phone fa-2x text-primary mb-2 mt-3"></i>
-                            <p>{{ app('website-content')->get('footer.contact.phone', '+880 1234 567890') }}</p>
+                            <div class="card mb-3 border-primary">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0"><i class="fas fa-money-bill-wave me-2"></i>Payment Information</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="mb-3">
+                                        <label for="payment_method" class="form-label fw-bold">Payment Method <span class="text-danger">*</span></label>
+                                        <select class="form-select" id="payment_method" name="payment_method" required>
+                                            <option value="">Select Payment Method</option>
+                                            <option value="bKash">bKash</option>
+                                            <option value="Nagad">Nagad</option>
+                                            <option value="Rocket">Rocket</option>
+                                            <option value="Bank_Transfer">Bank Transfer</option>
+                                            <option value="Cash">Cash</option>
+                                        </select>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    
+                                    <!-- Payment Information Display -->
+                                    <div class="mb-3 payment-info-container" style="display: none;">
+                                        <div class="alert alert-info payment-info">
+                                            <h6 class="alert-heading"><i class="fas fa-info-circle me-2"></i>Payment Information</h6>
+                                            <div id="payment-details">
+                                                <!-- Payment details will be loaded here -->
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="payment_amount" class="form-label fw-bold">Payment Amount <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <span class="input-group-text">৳</span>
+                                            <input type="text" class="form-control" id="payment_amount" name="payment_amount" required>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="payment_transaction_id" class="form-label">Transaction ID</label>
+                                        <input type="text" class="form-control" id="payment_transaction_id" name="payment_transaction_id">
+                                        <div class="form-text text-muted">Optional - Required for digital payments</div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="payment_screenshot" class="form-label fw-bold">Payment Screenshot <span class="text-danger">*</span></label>
+                                        <div class="input-group">
+                                            <input type="file" class="form-control" id="payment_screenshot" name="payment_screenshot" accept="image/*" required>
+                                            <label class="input-group-text" for="payment_screenshot"><i class="fas fa-image"></i></label>
+                                        </div>
+                                        <div class="invalid-feedback"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <input type="hidden" name="status" value="inactive">
+                            <input type="hidden" name="payment_status" value="pending">
+                            <input type="hidden" name="logo" value="">
+                            <input type="hidden" name="url" value="">
+                            
+                            <div class="d-grid gap-2">
+                                <button type="submit" class="btn btn-primary btn-lg">
+                                    <i class="fas fa-paper-plane me-2"></i>Submit Application
+                                </button>
+                            </div>
+                        </form>
+                        <div class="alert alert-info mt-4">
+                            <i class="fas fa-info-circle me-2"></i> Your application will be reviewed by our team. We'll contact you soon.
                         </div>
                     </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div class="modal fade" id="sponsorSuccessModal" tabindex="-1" aria-labelledby="sponsorSuccessModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content">
+                    <div class="modal-header bg-success text-white">
+                        <h5 class="modal-title" id="sponsorSuccessModalLabel"><i class="fas fa-check-circle me-2"></i>Application Submitted</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-center py-4">
+                        <div class="success-animation mb-4">
+                            <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+                                <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+                                <path class="checkmark__check" fill="none" d="M14.1 27.2l7.1 7.2 16.7-16.8"/>
+                            </svg>
+                        </div>
+                        <h4>Thank You!</h4>
+                        <p class="mb-4">Your sponsor application has been submitted successfully.</p>
+                        <p class="text-muted">Our team will review your application and contact you soon.</p>
+                        <button type="button" class="btn btn-success mt-3" data-bs-dismiss="modal">
+                            <i class="fas fa-home me-2"></i>Back to Home
+                        </button>
                     </div>
                 </div>
             </div>
@@ -359,6 +470,93 @@
     overflow: hidden;
     padding: 30px 0;
     background-color: #a51c1c;
+}
+
+/* Success Animation for Sponsor Form */
+.success-animation {
+    display: inline-block;
+    position: relative;
+}
+
+.checkmark {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: block;
+    stroke-width: 2;
+    stroke: #4bb71b;
+    stroke-miterlimit: 10;
+    box-shadow: inset 0px 0px 0px #4bb71b;
+    animation: fill .4s ease-in-out .4s forwards, scale .3s ease-in-out .9s both;
+    position: relative;
+    margin: 0 auto;
+}
+
+.checkmark__circle {
+    stroke-dasharray: 166;
+    stroke-dashoffset: 166;
+    stroke-width: 2;
+    stroke-miterlimit: 10;
+    stroke: #4bb71b;
+    fill: none;
+    animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+}
+
+.checkmark__check {
+    transform-origin: 50% 50%;
+    stroke-dasharray: 48;
+    stroke-dashoffset: 48;
+    animation: stroke 0.3s cubic-bezier(0.65, 0, 0.45, 1) 0.8s forwards;
+}
+
+@keyframes stroke {
+    100% {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes scale {
+    0%, 100% {
+        transform: none;
+    }
+    50% {
+        transform: scale3d(1.1, 1.1, 1);
+    }
+}
+
+@keyframes fill {
+    100% {
+        box-shadow: inset 0px 0px 0px 30px #4bb71b;
+    }
+}
+
+/* Required field indicator */
+.form-label .text-danger {
+    font-weight: bold;
+    font-size: 1.1em;
+}
+
+/* Form styling */
+#sponsorForm .card {
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+    transition: all 0.3s ease;
+}
+
+#sponsorForm .card:hover {
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+#sponsorForm .input-group-text {
+    background-color: #f8f9fa;
+}
+
+#sponsorForm .btn-lg {
+    transition: all 0.3s ease;
+}
+
+#sponsorForm .btn-lg:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
 }
 
 .slider-preloader {
@@ -2171,6 +2369,66 @@
         font-size: 14px;
     }
 }
+
+/* Payment Information Styling */
+.payment-info {
+    border-left: 4px solid #17a2b8;
+    background-color: rgba(23, 162, 184, 0.1);
+}
+
+.payment-info .alert-heading {
+    color: #17a2b8;
+    margin-bottom: 10px;
+}
+
+.payment-number {
+    font-family: monospace;
+    letter-spacing: 1px;
+}
+
+.payment-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    background-color: #f8f9fa;
+    border-radius: 8px;
+    padding: 5px;
+    overflow: hidden;
+}
+
+.payment-icon img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.bank-details {
+    border-left: 3px solid #17a2b8;
+}
+
+.bank-details .table {
+    margin-bottom: 0;
+}
+
+.bank-details tr:last-child td {
+    border-bottom: none;
+}
+
+.slider-preloader {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10;
+    transition: opacity 0.5s ease, visibility 0.5s ease;
+}
+
+.custom-hero-swiper[style*="opacity: 1"] .slider-preloader {
+    opacity: 0;
+    visibility: hidden;
+}
 </style>
 
 <!-- Add JS for the Sliders -->
@@ -2390,6 +2648,172 @@ document.addEventListener('DOMContentLoaded', function() {
         // Sponsor button click event
         $('#sponsor-btn').on('click', function() {
             $('#sponsorModal').modal('show');
+        });
+        
+        // Handle payment method change
+        $('#payment_method').on('change', function() {
+            const paymentMethod = $(this).val();
+            
+            // Hide payment info container by default
+            $('.payment-info-container').hide();
+            
+            if (!paymentMethod) {
+                return; // No payment method selected
+            }
+            
+            // Show the container
+            $('.payment-info-container').show();
+            
+            // Handle Cash payment method directly
+            if (paymentMethod === 'Cash') {
+                $('#payment-details').html(`
+                    <div class="d-flex align-items-center mb-2">
+                        <div class="payment-icon me-2">
+                            <i class="fas fa-money-bill-wave fa-2x text-success"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold">Cash Payment</div>
+                            <div class="text-muted">In-person payment</div>
+                        </div>
+                    </div>
+                    <p class="mb-0 text-muted small">
+                        <i class="fas fa-info-circle me-1"></i>
+                        Please bring cash payment when you visit our office. Our team will provide you with a receipt.
+                    </p>
+                `);
+                return;
+            }
+            
+            // For other payment methods, fetch from server
+            $('#payment-details').html('<div class="text-center"><i class="fas fa-spinner fa-spin"></i> Loading payment information...</div>');
+            
+            // Fetch payment info via AJAX
+            $.ajax({
+                url: '/sponsor/payment-info/' + paymentMethod,
+                type: 'GET',
+                success: function(data) {
+                    let detailsHtml = '';
+                    
+                    if (paymentMethod === 'bKash' || paymentMethod === 'Nagad' || paymentMethod === 'Rocket') {
+                        detailsHtml = `
+                            <p class="mb-1">Please send your payment to:</p>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="payment-icon me-2">
+                                    <img src="/images/payment-icons/${paymentMethod.toLowerCase()}.${paymentMethod === 'Nagad' ? 'webp' : 'png'}" alt="${paymentMethod}" width="40" height="40">
+                                </div>
+                                <div>
+                                    <div class="fw-bold">${paymentMethod} Number:</div>
+                                    <div class="payment-number fs-5">${data.number}</div>
+                                    <div class="text-muted small">${data.type} Account</div>
+                                </div>
+                            </div>
+                            <p class="mb-1 text-muted small">
+                                <i class="fas fa-info-circle me-1"></i> 
+                                After sending payment, please take a screenshot of the transaction and upload it below.
+                            </p>
+                        `;
+                    } else if (paymentMethod === 'Bank_Transfer') {
+                        detailsHtml = `
+                            <p class="mb-1">Please transfer your payment to:</p>
+                            <div class="d-flex align-items-center mb-2">
+                                <div class="payment-icon me-2">
+                                    <i class="fas fa-university fa-2x text-info"></i>
+                                </div>
+                                <div>
+                                    <div class="fw-bold">${data.bank_name}</div>
+                                    <div class="text-muted small">Bank Transfer</div>
+                                </div>
+                            </div>
+                            <div class="bank-details p-2 mb-2 bg-light rounded">
+                                <table class="table table-sm table-borderless mb-0">
+                                    <tr>
+                                        <td class="fw-bold">Account Name:</td>
+                                        <td>${data.account_name}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Account Number:</td>
+                                        <td class="payment-number">${data.account_number}</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="fw-bold">Branch:</td>
+                                        <td>${data.branch}</td>
+                                    </tr>
+                                </table>
+                            </div>
+                            <p class="mb-1 text-muted small">
+                                <i class="fas fa-info-circle me-1"></i> 
+                                After making the transfer, please take a screenshot or photo of the receipt and upload it below.
+                            </p>
+                        `;
+                    }
+                    
+                    $('#payment-details').html(detailsHtml);
+                },
+                error: function() {
+                    $('.payment-info-container').hide();
+                }
+            });
+        });
+        
+        // Handle sponsor form submission
+        $('#sponsorForm').on('submit', function(e) {
+            e.preventDefault();
+            
+            // Create form data object
+            const formData = new FormData(this);
+            
+            // Disable submit button and show loading state
+            const submitBtn = $(this).find('button[type="submit"]');
+            const originalBtnText = submitBtn.html();
+            submitBtn.html('<i class="fas fa-spinner fa-spin me-2"></i>Processing...').prop('disabled', true);
+            
+            // Submit form via AJAX
+            $.ajax({
+                url: $(this).attr('action'),
+                method: 'POST',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function(response) {
+                    // Hide the form modal
+                    $('#sponsorModal').modal('hide');
+                    
+                    // Reset form
+                    $('#sponsorForm')[0].reset();
+                    $('.payment-info-container').hide();
+                    
+                    // Show success modal
+                    setTimeout(function() {
+                        $('#sponsorSuccessModal').modal('show');
+                    }, 500);
+                },
+                error: function(xhr) {
+                    // Handle validation errors
+                    if (xhr.status === 422) {
+                        const errors = xhr.responseJSON.errors;
+                        
+                        // Clear previous error messages
+                        $('.invalid-feedback').remove();
+                        $('.is-invalid').removeClass('is-invalid');
+                        
+                        // Display new error messages
+                        $.each(errors, function(field, messages) {
+                            const input = $('[name="' + field + '"]');
+                            input.addClass('is-invalid');
+                            
+                            // Add error message after input
+                            input.after('<div class="invalid-feedback">' + messages[0] + '</div>');
+                        });
+                    } else {
+                        // Show generic error message
+                        alert('An error occurred. Please try again later.');
+                    }
+                },
+                complete: function() {
+                    // Restore submit button
+                    submitBtn.html(originalBtnText).prop('disabled', false);
+                }
+            });
         });
         
         // When division changes

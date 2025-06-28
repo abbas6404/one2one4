@@ -121,7 +121,34 @@ class WebsiteContentController extends Controller
                     $filename = time() . '_slide_' . rand(1000, 9999) . '.' . $image->getClientOriginalExtension();
                     $image->move($destinationPath, $filename);
                     $storagePath = 'images/slides/' . $filename;
-                } else {
+                } 
+                // Check if it's a logo
+                else if ($key === 'site.logo') {
+                    // Create directory if it doesn't exist
+                    $destinationPath = public_path('images/logo');
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0777, true);
+                    }
+                    
+                    // Generate filename and save
+                    $filename = 'site-logo.' . $image->getClientOriginalExtension();
+                    $image->move($destinationPath, $filename);
+                    $storagePath = 'images/logo/' . $filename;
+                }
+                // Check if it's a favicon
+                else if ($key === 'site.favicon') {
+                    // Create directory if it doesn't exist
+                    $destinationPath = public_path('images/logo');
+                    if (!file_exists($destinationPath)) {
+                        mkdir($destinationPath, 0777, true);
+                    }
+                    
+                    // Generate filename and save
+                    $filename = 'favicon.' . $image->getClientOriginalExtension();
+                    $image->move($destinationPath, $filename);
+                    $storagePath = 'images/logo/' . $filename;
+                }
+                else {
                     // For other images
                     $destinationPath = public_path('images');
                     if (!file_exists($destinationPath)) {

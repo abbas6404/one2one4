@@ -14,8 +14,15 @@ return new class extends Migration
         Schema::create('sponsors', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('logo');
+            $table->string('logo')->nullable();
             $table->string('url')->nullable();
+            $table->string('phone');
+            $table->string('email');
+            $table->string('payment_method');
+            $table->string('payment_status')->default('pending');
+            $table->string('payment_amount');
+            $table->string('payment_screenshot');
+            $table->string('payment_transaction_id')->nullable();
             $table->enum('status', ['active', 'inactive'])->default('active');
             $table->integer('order')->default(0);
             $table->timestamps();

@@ -17,9 +17,11 @@ return new class extends Migration
             $table->string('phone');
             $table->string('email')->nullable();
             $table->string('blood_group');
-            $table->text('present_address');
+            $table->foreignId('upazila_id')->nullable()->constrained('upazilas')->onDelete('set null');
             $table->string('tshirt_size');
             $table->string('payment_method');
+            $table->string('payment_amount')->nullable();
+            $table->foreignId('event_id')->nullable()->constrained('events')->onDelete('set null');
             $table->string('trx_id')->nullable();
             $table->string('screenshot')->nullable();
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');

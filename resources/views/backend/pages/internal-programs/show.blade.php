@@ -60,14 +60,76 @@ Internal Program Details
         margin-top: 10px;
     }
     .screenshot-img {
-        max-width: 100%;
+        width: 300px;
+        height: 200px;
+        object-fit: cover;
         border-radius: 5px;
         border: 1px solid #ddd;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+    .screenshot-img:hover {
+        transform: scale(1.05);
     }
     .status-form {
         margin-top: 20px;
         padding-top: 20px;
         border-top: 1px solid #f1f1f1;
+    }
+    .event-badge {
+        display: inline-block;
+        padding: 6px 12px;
+        border-radius: 4px;
+        background-color: #007bff;
+        color: #fff;
+        font-weight: 500;
+        font-size: 13px;
+        margin-bottom: 10px;
+    }
+    .event-details {
+        background-color: #f8f9fa;
+        border-radius: 6px;
+        padding: 15px;
+        margin-top: 10px;
+    }
+    .event-details h5 {
+        margin-bottom: 10px;
+        color: #333;
+    }
+    .event-details p {
+        margin-bottom: 5px;
+        color: #666;
+    }
+    .event-details .badge-featured {
+        background-color: #ff9800;
+        color: #fff;
+    }
+    /* Modal styles */
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1050;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.8);
+    }
+    .modal-content {
+        margin: auto;
+        display: block;
+        max-width: 90%;
+        max-height: 90%;
+    }
+    .modal-close {
+        position: absolute;
+        top: 15px;
+        right: 35px;
+        color: #f1f1f1;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
     }
 </style>
 @endsection
@@ -132,15 +194,58 @@ Internal Program Details
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Present Address</div>
-                            <div class="detail-value">{{ $internalProgram->present_address }}</div>
+                            <div class="detail-value">
+                                @if($internalProgram->upazila)
+                                    <strong>{{ $internalProgram->upazila->name }}</strong>,
+                                    {{ $internalProgram->upazila->district->name }},
+                                    {{ $internalProgram->upazila->district->division->name }}
+                                    @if($internalProgram->present_address)
+                                        <br><span class="text-muted">{{ $internalProgram->present_address }}</span>
+                                    @endif
+                                @else
+                                    {{ $internalProgram->present_address ?? 'N/A' }}
+                                @endif
+                            </div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">T-shirt Size</div>
                             <div class="detail-value">{{ $internalProgram->tshirt_size }}</div>
                         </div>
                         <div class="detail-row">
+                            <div class="detail-label">Event</div>
+                            <div class="detail-value">
+                                @if($internalProgram->event)
+                                    <div class="event-badge">
+                                        <i class="fa fa-calendar-check-o mr-1"></i> {{ $internalProgram->event->title }}
+                                    </div>
+                                    <div class="event-details">
+                                        <h5>Event Details</h5>
+                                        <p><strong>Date:</strong> {{ $internalProgram->event->start_date->format('M d, Y h:i A') }} to {{ $internalProgram->event->end_date->format('M d, Y h:i A') }}</p>
+                                        <p><strong>Location:</strong> {{ $internalProgram->event->location ?? 'N/A' }}</p>
+                                        <p><strong>Status:</strong> 
+                                            <span class="badge {{ $internalProgram->event->status == 'active' ? 'badge-success' : 'badge-warning' }}">
+                                                {{ ucfirst($internalProgram->event->status) }}
+                                            </span>
+                                            @if($internalProgram->event->is_featured)
+                                                <span class="badge badge-featured ml-2">Featured</span>
+                                            @endif
+                                        </p>
+                                        @if($internalProgram->event->event_fee)
+                                            <p><strong>Fee:</strong> {{ $internalProgram->event->event_fee }} BDT</p>
+                                        @endif
+                                    </div>
+                                @else
+                                    <span class="text-muted">No event associated</span>
+                                @endif
+                            </div>
+                        </div>
+                        <div class="detail-row">
                             <div class="detail-label">Payment Method</div>
                             <div class="detail-value">{{ $internalProgram->payment_method }}</div>
+                        </div>
+                        <div class="detail-row">
+                            <div class="detail-label">Payment Amount</div>
+                            <div class="detail-value">{{ $internalProgram->payment_amount ? $internalProgram->payment_amount . ' BDT' : 'N/A' }}</div>
                         </div>
                         <div class="detail-row">
                             <div class="detail-label">Transaction ID</div>
@@ -171,7 +276,8 @@ Internal Program Details
                             <div class="detail-value">
                                 @if($internalProgram->screenshot)
                                     <div class="screenshot-container">
-                                        <img src="{{ $internalProgram->screenshot_url }}" alt="Payment Screenshot" class="screenshot-img">
+                                        <img src="{{ $internalProgram->screenshot_url }}" alt="Payment Screenshot" class="screenshot-img" id="screenshotImg" onclick="openImageModal()">
+                                        <p class="mt-2 text-muted">Click on image to view full size</p>
                                     </div>
                                 @else
                                     <span class="text-muted">No screenshot uploaded</span>
@@ -200,4 +306,36 @@ Internal Program Details
         </div>
     </div>
 </div>
+
+<!-- Image Modal -->
+<div id="imageModal" class="modal">
+    <span class="modal-close" onclick="closeImageModal()">&times;</span>
+    <img class="modal-content" id="modalImage">
+</div>
+@endsection
+
+@section('scripts')
+<script>
+    // Image modal functions
+    function openImageModal() {
+        var modal = document.getElementById("imageModal");
+        var img = document.getElementById("screenshotImg");
+        var modalImg = document.getElementById("modalImage");
+        
+        modal.style.display = "block";
+        modalImg.src = img.src;
+    }
+    
+    function closeImageModal() {
+        document.getElementById("imageModal").style.display = "none";
+    }
+    
+    // Close modal when clicking outside the image
+    window.onclick = function(event) {
+        var modal = document.getElementById("imageModal");
+        if (event.target == modal) {
+            modal.style.display = "none";
+        }
+    }
+</script>
 @endsection 

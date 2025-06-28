@@ -38,6 +38,7 @@ Edit Internal Program
     .custom-file-label {
         overflow: hidden;
     }
+
     .current-screenshot {
         margin-top: 10px;
         max-width: 200px;
@@ -48,6 +49,10 @@ Edit Internal Program
     .current-screenshot img {
         max-width: 100%;
         height: auto;
+    }
+    .form-control {
+        border-radius: 20px;
+        padding: 5px 20px;
     }
 </style>
 @endsection
@@ -101,12 +106,12 @@ Edit Internal Program
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.internal-programs.update', $internalProgram->id) }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('admin.internal-programs.update', $internalProgram->id) }}" method="POST">
                         @csrf
                         @method('PUT')
 
                         <div class="form-section">
-                            <div class="form-section-title">Personal Information</div>
+                            <div class="form-section-title">Basic Information</div>
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
@@ -128,46 +133,61 @@ Edit Internal Program
                                 </div>
                             </div>
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="email">Email (Optional)</label>
-                                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $internalProgram->email) }}">
-                                        @error('email')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="blood_group" class="required">Blood Group</label>
-                                        <select class="form-control @error('blood_group') is-invalid @enderror" id="blood_group" name="blood_group" required>
-                                            <option value="">Select Blood Group</option>
-                                            <option value="A+" {{ old('blood_group', $internalProgram->blood_group) == 'A+' ? 'selected' : '' }}>A+</option>
-                                            <option value="A-" {{ old('blood_group', $internalProgram->blood_group) == 'A-' ? 'selected' : '' }}>A-</option>
-                                            <option value="B+" {{ old('blood_group', $internalProgram->blood_group) == 'B+' ? 'selected' : '' }}>B+</option>
-                                            <option value="B-" {{ old('blood_group', $internalProgram->blood_group) == 'B-' ? 'selected' : '' }}>B-</option>
-                                            <option value="AB+" {{ old('blood_group', $internalProgram->blood_group) == 'AB+' ? 'selected' : '' }}>AB+</option>
-                                            <option value="AB-" {{ old('blood_group', $internalProgram->blood_group) == 'AB-' ? 'selected' : '' }}>AB-</option>
-                                            <option value="O+" {{ old('blood_group', $internalProgram->blood_group) == 'O+' ? 'selected' : '' }}>O+</option>
-                                            <option value="O-" {{ old('blood_group', $internalProgram->blood_group) == 'O-' ? 'selected' : '' }}>O-</option>
-                                        </select>
-                                        @error('blood_group')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="present_address" class="required">Present Address</label>
-                                        <textarea class="form-control @error('present_address') is-invalid @enderror" id="present_address" name="present_address" rows="3" required>{{ old('present_address', $internalProgram->present_address) }}</textarea>
-                                        @error('present_address')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
+                                        <label class="required">Location</label>
+                                        <div class="row">
+                                            <div class="col-md-4">
+                                                <select class="form-control @error('division_id') is-invalid @enderror" id="division_id" name="division_id" required>
+                                                    <option value="">Select Division</option>
+                                                    @foreach(\App\Models\Division::orderBy('name')->get() as $division)
+                                                        <option value="{{ $division->id }}" 
+                                                            {{ old('division_id', $internalProgram->upazila && $internalProgram->upazila->district ? $internalProgram->upazila->district->division_id : '') == $division->id ? 'selected' : '' }}>
+                                                            {{ $division->name }}
+                                                        </option>
+                                                    @endforeach
+                                                </select>
+                                                @error('division_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select class="form-control @error('district_id') is-invalid @enderror" id="district_id" name="district_id" required>
+                                                    <option value="">Select District</option>
+                                                    @if(old('division_id', $internalProgram->upazila && $internalProgram->upazila->district ? $internalProgram->upazila->district->division_id : ''))
+                                                        @foreach(\App\Models\District::where('division_id', old('division_id', $internalProgram->upazila && $internalProgram->upazila->district ? $internalProgram->upazila->district->division_id : ''))->orderBy('name')->get() as $district)
+                                                            <option value="{{ $district->id }}" 
+                                                                {{ old('district_id', $internalProgram->upazila ? $internalProgram->upazila->district_id : '') == $district->id ? 'selected' : '' }}>
+                                                                {{ $district->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                                @error('district_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                            <div class="col-md-4">
+                                                <select class="form-control @error('upazila_id') is-invalid @enderror" id="upazila_id" name="upazila_id" required>
+                                                    <option value="">Select Upazila</option>
+                                                    @if(old('district_id', $internalProgram->upazila ? $internalProgram->upazila->district_id : ''))
+                                                        @foreach(\App\Models\Upazila::where('district_id', old('district_id', $internalProgram->upazila ? $internalProgram->upazila->district_id : ''))->orderBy('name')->get() as $upazila)
+                                                            <option value="{{ $upazila->id }}" 
+                                                                {{ old('upazila_id', $internalProgram->upazila_id) == $upazila->id ? 'selected' : '' }}>
+                                                                {{ $upazila->name }}
+                                                            </option>
+                                                        @endforeach
+                                                    @endif
+                                                </select>
+                                                @error('upazila_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
+                          
                         </div>
 
                         <div class="form-section">
@@ -203,60 +223,56 @@ Edit Internal Program
                                     </div>
                                 </div>
                             </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-group">
+                                        <label for="event_id">Associated Event</label>
+                                        <select class="form-control @error('event_id') is-invalid @enderror" id="event_id" name="event_id">
+                                            <option value="">Select Event (Optional)</option>
+                                            @foreach($events as $event)
+                                                <option value="{{ $event->id }}" 
+                                                    {{ old('event_id', $internalProgram->event_id) == $event->id ? 'selected' : '' }}
+                                                    data-fee="{{ $event->event_fee }}">
+                                                    {{ $event->title }} 
+                                                    @if($event->is_featured) [Featured] @endif
+                                                    @if($event->event_fee) - {{ $event->event_fee }} BDT @endif
+                                                    ({{ $event->start_date->format('M d, Y') }})
+                                                </option>
+                                            @endforeach
+                                        </select>
+                                        @error('event_id')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="form-section">
                             <div class="form-section-title">Payment Information</div>
                             <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="payment_method" class="required">Payment Method</label>
-                                        <select class="form-control @error('payment_method') is-invalid @enderror" id="payment_method" name="payment_method" required>
-                                            <option value="">Select Payment Method</option>
-                                            <option value="bKash" {{ old('payment_method', $internalProgram->payment_method) == 'bKash' ? 'selected' : '' }}>bKash</option>
-                                            <option value="Nagad" {{ old('payment_method', $internalProgram->payment_method) == 'Nagad' ? 'selected' : '' }}>Nagad</option>
-                                            <option value="Rocket" {{ old('payment_method', $internalProgram->payment_method) == 'Rocket' ? 'selected' : '' }}>Rocket</option>
-                                            <option value="Cash" {{ old('payment_method', $internalProgram->payment_method) == 'Cash' ? 'selected' : '' }}>Cash</option>
-                                            <option value="Bank Transfer" {{ old('payment_method', $internalProgram->payment_method) == 'Bank Transfer' ? 'selected' : '' }}>Bank Transfer</option>
-                                        </select>
-                                        @error('payment_method')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="trx_id">Transaction ID (Optional)</label>
-                                        <input type="text" class="form-control @error('trx_id') is-invalid @enderror" id="trx_id" name="trx_id" value="{{ old('trx_id', $internalProgram->trx_id) }}">
-                                        @error('trx_id')
-                                            <div class="invalid-feedback">{{ $message }}</div>
-                                        @enderror
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="row">
                                 <div class="col-md-12">
                                     <div class="form-group">
-                                        <label for="screenshot">Payment Screenshot (Optional)</label>
-                                        <div class="custom-file">
-                                            <input type="file" class="custom-file-input @error('screenshot') is-invalid @enderror" id="screenshot" name="screenshot">
-                                            <label class="custom-file-label" for="screenshot">Choose file</label>
-                                            @error('screenshot')
+                                        <label for="payment_amount">Payment Amount</label>
+                                        <div class="input-group">
+                                            <input type="number" step="0.01" class="form-control @error('payment_amount') is-invalid @enderror" id="payment_amount" name="payment_amount" value="{{ old('payment_amount', $internalProgram->payment_amount) }}">
+                                            <div class="input-group-append">
+                                                <span class="input-group-text">BDT</span>
+                                            </div>
+                                            @error('payment_amount')
                                                 <div class="invalid-feedback">{{ $message }}</div>
                                             @enderror
                                         </div>
-                                        <small class="form-text text-muted">Accepted file types: JPG, PNG. Max size: 2MB.</small>
-                                        
-                                        @if($internalProgram->screenshot)
-                                            <div class="current-screenshot mt-2">
-                                                <p>Current Screenshot:</p>
-                                                <img src="{{ $internalProgram->screenshot_url }}" alt="Current Screenshot">
-                                            </div>
-                                        @endif
                                     </div>
                                 </div>
                             </div>
                         </div>
+
+                        <!-- Hidden fields to preserve data -->
+                        <input type="hidden" name="blood_group" value="{{ $internalProgram->blood_group }}">
+                        <input type="hidden" name="email" value="{{ $internalProgram->email }}">
+                        <input type="hidden" name="payment_method" value="{{ $internalProgram->payment_method }}">
+                        <input type="hidden" name="trx_id" value="{{ $internalProgram->trx_id }}">
 
                         <div class="form-group mt-4">
                             <button type="submit" class="btn btn-primary">
@@ -277,10 +293,58 @@ Edit Internal Program
 @section('scripts')
 <script>
     $(document).ready(function() {
-        // Update file input label when file is selected
-        $('.custom-file-input').on('change', function() {
-            let fileName = $(this).val().split('\\').pop();
-            $(this).next('.custom-file-label').addClass("selected").html(fileName);
+        // Update payment amount when event is selected
+        $('#event_id').on('change', function() {
+            var selectedOption = $(this).find('option:selected');
+            var fee = selectedOption.data('fee');
+            
+            if (fee) {
+                $('#payment_amount').val(fee);
+            } else {
+                $('#payment_amount').val('');
+            }
+        });
+
+        // Handle location dropdowns
+        $('#division_id').on('change', function() {
+            var divisionId = $(this).val();
+            if (divisionId) {
+                // Clear subsequent dropdowns
+                $('#district_id').empty().append('<option value="">Select District</option>');
+                $('#upazila_id').empty().append('<option value="">Select Upazila</option>');
+                
+                // Get districts for the selected division
+                $.ajax({
+                    url: '/get-districts/' + divisionId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        $.each(data, function(key, value) {
+                            $('#district_id').append('<option value="' + value.id + '">' + value.name + '</option>');
+                        });
+                    }
+                });
+            }
+        });
+        
+        $('#district_id').on('change', function() {
+            var districtId = $(this).val();
+            if (districtId) {
+                // Clear upazila dropdown
+                $('#upazila_id').empty().append('<option value="">Select Upazila</option>');
+                
+                // Get upazilas for the selected district
+                $.ajax({
+                    url: '/get-upazilas/' + districtId,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(data) {
+                        $.each(data, function(key, value) {
+                            $('#upazila_id').append('<option value="' + value.id + '">' + value.name + '</option>');
+                        });
+                    }
+                });
+            }
         });
     });
 </script>

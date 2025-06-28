@@ -7,6 +7,7 @@ namespace Database\Factories;
 use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
+use App\Models\Upazila;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -25,6 +26,9 @@ class UserFactory extends Factory
      */
     public function definition(): array
     {
+        // Get a random upazila ID or null if none exist
+        $upazilaId = Upazila::count() > 0 ? Upazila::inRandomOrder()->first()->id : null;
+        
         return [
             'name' => fake()->name(),
             'email' => fake()->unique()->safeEmail(),
@@ -47,6 +51,7 @@ class UserFactory extends Factory
             'status' => 'active',
             'mode' => 'donor',
             'is_donor' => $this->faker->boolean(),
+            'upazila_id' => $upazilaId,
         ];
     }
 

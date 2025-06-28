@@ -7,7 +7,8 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use App\Models\Location;
+use App\Models\Upazila;
+use App\Models\Admin;
 
 class UserSeeder extends Seeder
 {
@@ -18,21 +19,24 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
+        // Get all upazilas for random assignment
+        $upazilas = Upazila::all();
+        
+        if ($upazilas->isEmpty()) {
+            $this->command->error('No upazilas found. Please run the UpazilaSeeder first.');
+            return;
+        }
+        
+        // Get admin for created_by field
+        $admin = Admin::first();
+        
         // Create 10 test users
-        User::factory(10)->create()->each(function ($user) {
-            // Create permanent and present locations for each user
-            Location::create([
-                'user_id' => $user->id,
-                'type' => 'permanent',
-                'address' => fake()->address,
-            ]);
-            
-            Location::create([
-                'user_id' => $user->id,
-                'type' => 'present',
-                'address' => fake()->address,
-            ]);
-        });
+        User::factory(10)->create([
+            'created_by' => $admin ? $admin->id : null,
+            'upazila_id' => function() use ($upazilas) {
+                return $upazilas->random()->id;
+            }
+        ]);
 
         // Create a test user with known credentials
         $testUser = User::create([
@@ -46,19 +50,9 @@ class UserSeeder extends Seeder
             'is_donor' => true,
             'registration_step' => 3,
             'profile_completed' => true,
-        ]);
-
-        // Create locations for test user
-        Location::create([
-            'user_id' => $testUser->id,
-            'type' => 'permanent',
-            'address' => 'Test Permanent Address',
-        ]);
-        
-        Location::create([
-            'user_id' => $testUser->id,
-            'type' => 'present',
-            'address' => 'Test Present Address',
+            'upazila_id' => $upazilas->random()->id,
+            'created_by' => $admin ? $admin->id : null,
+            'ssc_exam_year' => 2010,
         ]);
 
         // Create admin user
@@ -66,62 +60,36 @@ class UserSeeder extends Seeder
             'name' => 'Admin User',
             'email' => 'admin@example.com',
             'password' => Hash::make('password'),
-            'phone' => '01712345678',
+            'phone' => '01712345679',
             'blood_group' => 'O+',
             'gender' => 'male',
             'mode' => 'donor',
             'status' => 'active',
             'email_verified_at' => now(),
-        ]);
-
-        // Create locations for admin user
-        Location::create([
-            'user_id' => $adminUser->id,
-            'type' => 'permanent',
-            'address' => 'Admin Permanent Address',
-        ]);
-        
-        Location::create([
-            'user_id' => $adminUser->id,
-            'type' => 'present',
-            'address' => 'Admin Present Address',
+            'upazila_id' => $upazilas->random()->id,
+            'created_by' => $admin ? $admin->id : null,
+            'ssc_exam_year' => 2008,
         ]);
 
         // Create sample donor users
         User::factory(10)->create([
             'mode' => 'donor',
             'status' => 'active',
-        ])->each(function ($user) {
-            Location::create([
-                'user_id' => $user->id,
-                'type' => 'permanent',
-                'address' => fake()->address,
-            ]);
-            
-            Location::create([
-                'user_id' => $user->id,
-                'type' => 'present',
-                'address' => fake()->address,
-            ]);
-        });
+            'created_by' => $admin ? $admin->id : null,
+            'upazila_id' => function() use ($upazilas) {
+                return $upazilas->random()->id;
+            }
+        ]);
 
         // Create sample recipient users
         User::factory(5)->create([
             'mode' => 'recipient',
             'status' => 'active',
-        ])->each(function ($user) {
-            Location::create([
-                'user_id' => $user->id,
-                'type' => 'permanent',
-                'address' => fake()->address,
-            ]);
-            
-            Location::create([
-                'user_id' => $user->id,
-                'type' => 'present',
-                'address' => fake()->address,
-            ]);
-        });
+            'created_by' => $admin ? $admin->id : null,
+            'upazila_id' => function() use ($upazilas) {
+                return $upazilas->random()->id;
+            }
+        ]);
 
         $this->command->info('Users table seeded successfully!');
         $this->command->info('Admin credentials:');

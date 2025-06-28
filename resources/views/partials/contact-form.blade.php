@@ -17,11 +17,11 @@
                         </div>
                         <div class="info-content">
                             <h5>Location</h5>
-                            <p>{{ $address ?? app('website-content')->get('footer.contact.address', 'SSF-12 & HSF-14 Batch, Medical College Gate, Dhaka') }}</p>
+                            <p>{{ $address ?? app('website-content')->get('footer.contact.address', 'Bangladesh') }}</p>
                         </div>
                     </div>
                     
-                    <div class="contact-info-item">
+                    <!-- <div class="contact-info-item">
                         <div class="icon-box">
                             <i class="fas fa-phone-alt"></i>
                         </div>
@@ -29,7 +29,7 @@
                             <h5>Phone Number</h5>
                             <p>{{ $phone ?? app('website-content')->get('footer.contact.phone', '+880 1234 567890') }}</p>
                         </div>
-                    </div>
+                    </div> -->
                     
                     <div class="contact-info-item">
                         <div class="icon-box">
@@ -37,7 +37,7 @@
                         </div>
                         <div class="info-content">
                             <h5>Email Address</h5>
-                            <p>{{ $email ?? app('website-content')->get('footer.contact.email', 'info@one2one4.org') }}</p>
+                            <p>{{ $email ?? app('website-content')->get('footer.contact.email', 'one2one4.bd@gmail.com') }}</p>
                         </div>
                     </div>
                 </div>

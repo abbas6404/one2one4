@@ -17,6 +17,7 @@ use App\Http\Controllers\Frontend\LocationController;
 use App\Http\Controllers\Frontend\MyDonorsController;
 use App\Http\Controllers\Public\EventController;
 use App\Facades\Seo;
+use App\Http\Controllers\SponsorController;
 
 /*
 |--------------------------------------------------------------------------
@@ -50,9 +51,12 @@ Route::get('/gallery/{slug}', [App\Http\Controllers\Public\GalleryController::cl
 Route::get('/internal-program', [ProgramController::class, 'index'])->name('internal.program');
 Route::get('/internal-program-registration', [App\Http\Controllers\Public\InternalProgramController::class, 'showRegistrationForm'])->name('internal-program.registration');
 Route::post('/internal-program-registration', [App\Http\Controllers\Public\InternalProgramController::class, 'register'])->name('internal-program.register');
+Route::post('/internal-program-check-status', [App\Http\Controllers\Public\InternalProgramController::class, 'checkStatus'])->name('internal-program.check-status');
 Route::get('/contact', [App\Http\Controllers\Public\ContactController::class, 'index'])->name('contact');
 Route::post('/contact', [App\Http\Controllers\Public\ContactController::class, 'submit'])->name('contact.store');
 Route::get('/emergency', [App\Http\Controllers\Public\EmergencyController::class, 'index'])->name('emergency');
+Route::post('/sponsor/register', [SponsorController::class, 'register'])->name('sponsor.register');
+Route::get('/sponsor/payment-info/{method}', [SponsorController::class, 'getPaymentInfo'])->name('sponsor.payment-info');
 
 // SEO Test Route
 Route::get('/seo-test', function() {

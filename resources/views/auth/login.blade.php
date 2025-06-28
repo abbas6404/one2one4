@@ -301,6 +301,38 @@
         font-size: 20px;
     }
     
+    .password-toggle-icon {
+        position: absolute;
+        right: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #777;
+        transition: color 0.3s ease;
+        z-index: 10;
+    }
+    
+    .password-toggle-icon:hover {
+        color: #a51c1c;
+    }
+    
+    .input-icon-container {
+        position: relative;
+    }
+    
+    .input-icon {
+        position: absolute;
+        left: 15px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #777;
+        z-index: 10;
+    }
+    
+    .input-with-icon {
+        padding-left: 45px;
+    }
+    
     @media (max-width: 992px) {
         .login-container {
             flex-direction: column;
@@ -340,6 +372,8 @@
             <div class="login-image">
                 <div class="login-image-overlay"></div>
                 <div class="login-image-content">
+                    <img src="{{ asset('images/loginPage/loign_page_img.png') }}" alt="Blood Donation" class="img-fluid">
+
                     <h1 class="login-image-title">Welcome Back</h1>
                     <p class="login-image-subtitle">Log in to continue your journey of saving lives through blood donation.</p>
                     
@@ -392,7 +426,10 @@
 
                     <div class="login-form-group">
                         <label for="email" class="login-form-label">Email Address</label>
-                        <input id="email" type="email" class="login-form-input @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Enter your email">
+                        <div class="input-icon-container">
+                            <input id="email" type="email" class="login-form-input input-with-icon @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email" autofocus placeholder="Enter your email">
+                            <i class="fas fa-envelope input-icon"></i>
+                        </div>
                             @error('email')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -402,7 +439,13 @@
 
                     <div class="login-form-group">
                         <label for="password" class="login-form-label">Password</label>
-                        <input id="password" type="password" class="login-form-input @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="Enter your password">
+                        <div class="input-icon-container">
+                            <input id="password" type="password" class="login-form-input input-with-icon @error('password') is-invalid @enderror" name="password" required autocomplete="current-password" placeholder="Enter your password">
+                            <i class="fas fa-lock input-icon"></i>
+                            <span class="password-toggle-icon">
+                                <i class="fas fa-eye" id="togglePassword"></i>
+                            </span>
+                        </div>
                             @error('password')
                                 <span class="invalid-feedback" role="alert">
                                     <strong>{{ $message }}</strong>
@@ -450,3 +493,22 @@
         </div>
 </section>
 @endsection
+
+@push('scripts')
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const togglePassword = document.querySelector('#togglePassword');
+        const password = document.querySelector('#password');
+        
+        togglePassword.addEventListener('click', function() {
+            // Toggle the type attribute
+            const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+            password.setAttribute('type', type);
+            
+            // Toggle the eye / eye-slash icon
+            this.classList.toggle('fa-eye');
+            this.classList.toggle('fa-eye-slash');
+        });
+    });
+</script>
+@endpush

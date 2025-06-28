@@ -11,9 +11,11 @@ class Event extends Model
     
     protected $fillable = [
         'title', 
-        'slug',
         'description', 
-        'location',
+        'event_fee',
+        'upazila_id',
+        'district_id',
+        'division_id',
         'start_date',
         'end_date',
         'image', 
@@ -99,5 +101,37 @@ class Event extends Model
     public function hasEnded()
     {
         return $this->end_date->lt(now());
+    }
+    
+    /**
+     * Get the division associated with the event.
+     */
+    public function division()
+    {
+        return $this->belongsTo(Division::class);
+    }
+    
+    /**
+     * Get the district associated with the event.
+     */
+    public function district()
+    {
+        return $this->belongsTo(District::class);
+    }
+    
+    /**
+     * Get the upazila associated with the event.
+     */
+    public function upazila()
+    {
+        return $this->belongsTo(Upazila::class);
+    }
+    
+    /**
+     * Get the internal programs associated with the event.
+     */
+    public function internalPrograms()
+    {
+        return $this->hasMany(InternalProgram::class);
     }
 } 

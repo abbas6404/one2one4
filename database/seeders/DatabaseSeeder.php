@@ -44,6 +44,13 @@ class DatabaseSeeder extends Seeder
             
             // Events
             EventSeeder::class,
+            EventPermissionSeeder::class,
+            
+            // Internal Programs
+            InternalProgramSeeder::class,
+            
+            // Payment Info
+            PaymentInfoSeeder::class,
         ]);
     }
 }

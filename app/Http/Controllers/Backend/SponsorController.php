@@ -14,11 +14,35 @@ class SponsorController extends Controller
      *
      * @return \Illuminate\View\View
      */
-    public function index()
+    public function index(Request $request)
     {
         $this->checkAuthorization(auth('admin')->user(), ['sponsor.view']);
         
-        $sponsors = Sponsor::orderBy('order', 'asc')->get();
+        $query = Sponsor::query();
+        
+        // Apply filters if provided
+        if ($request->has('status') && $request->status != '') {
+            $query->where('status', $request->status);
+        }
+        
+        if ($request->has('payment_status') && $request->payment_status != '') {
+            $query->where('payment_status', $request->payment_status);
+        }
+        
+        if ($request->has('search') && $request->search != '') {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('email', 'like', "%{$search}%")
+                  ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+        
+        // Order by display order and then by name
+        $sponsors = $query->orderBy('order', 'asc')
+                          ->orderBy('name', 'asc')
+                          ->paginate(10);
+        
         return view('backend.pages.sponsors.index', compact('sponsors'));
     }
 
@@ -49,10 +73,15 @@ class SponsorController extends Controller
             'url' => 'nullable|url|max:255',
             'logo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'required|string|in:active,inactive',
-            'order' => 'required|integer|min:1',
+            'order' => 'required|integer|min:0',
+            'payment_amount' => 'required|numeric|min:0',
+            'payment_method' => 'required|string',
+            'payment_status' => 'required|string|in:pending,completed',
+            'payment_transaction_id' => 'nullable|string|max:255',
+            'payment_screenshot' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
         ]);
         
-        $data = $request->except('logo');
+        $data = $request->except(['logo', 'payment_screenshot']);
         
         // Handle logo upload
         if ($request->hasFile('logo')) {
@@ -67,6 +96,21 @@ class SponsorController extends Controller
             $logoName = time() . '_' . uniqid() . '.' . $logo->getClientOriginalExtension();
             $logo->move($uploadPath, $logoName);
             $data['logo'] = 'images/sponsors/' . $logoName;
+        }
+        
+        // Handle payment screenshot upload
+        if ($request->hasFile('payment_screenshot')) {
+            $screenshot = $request->file('payment_screenshot');
+            
+            // Create directory if it doesn't exist
+            $uploadPath = public_path('images/sponsors/payments');
+            if (!File::exists($uploadPath)) {
+                File::makeDirectory($uploadPath, 0755, true);
+            }
+            
+            $screenshotName = time() . '_' . uniqid() . '.' . $screenshot->getClientOriginalExtension();
+            $screenshot->move($uploadPath, $screenshotName);
+            $data['payment_screenshot'] = 'images/sponsors/payments/' . $screenshotName;
         }
         
         Sponsor::create($data);
@@ -117,10 +161,15 @@ class SponsorController extends Controller
             'url' => 'nullable|url|max:255',
             'logo' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'status' => 'required|string|in:active,inactive',
-            'order' => 'required|integer|min:1',
+            'order' => 'required|integer|min:0',
+            'payment_amount' => 'required|numeric|min:0',
+            'payment_method' => 'required|string',
+            'payment_status' => 'required|string|in:pending,completed',
+            'payment_transaction_id' => 'nullable|string|max:255',
         ]);
         
-        $data = $request->except('logo');
+        // Remove payment_screenshot from request data to prevent updates
+        $data = $request->except(['logo', 'payment_screenshot']);
         
         // Handle logo upload if provided
         if ($request->hasFile('logo')) {

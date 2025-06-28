@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Event;
 use App\Models\InternalProgram;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -28,6 +29,14 @@ class InternalProgramController extends Controller
             $query->where('blood_group', $request->blood_group);
         }
         
+        if ($request->filled('event_id')) {
+            if ($request->event_id === 'none') {
+                $query->whereNull('event_id');
+            } else {
+                $query->where('event_id', $request->event_id);
+            }
+        }
+        
         // Date filtering
         if ($request->filled('start_date')) {
             $query->whereDate('created_at', '>=', $request->start_date);
@@ -47,13 +56,28 @@ class InternalProgramController extends Controller
             });
         }
         
-        // Sort by date
-        $query->latest();
+        // Sorting
+        if ($request->filled('sort')) {
+            $sortField = $request->sort;
+            $sortDirection = $request->filled('direction') ? $request->direction : 'asc';
+            
+            if ($sortField === 'payment_amount') {
+                $query->orderBy('payment_amount', $sortDirection);
+            } else {
+                $query->orderBy($sortField, $sortDirection);
+            }
+        } else {
+            // Default sort by date
+            $query->latest();
+        }
         
         // Paginate the results
-        $internalPrograms = $query->paginate(10)->withQueryString();
+        $internalPrograms = $query->with('event')->paginate(10)->withQueryString();
+        
+        // Get all active events for filtering
+        $events = Event::active()->orderBy('title')->get();
             
-        return view('backend.pages.internal-programs.index', compact('internalPrograms'));
+        return view('backend.pages.internal-programs.index', compact('internalPrograms', 'events'));
     }
 
     /**
@@ -62,7 +86,11 @@ class InternalProgramController extends Controller
     public function create()
     {
         $this->checkAuthorization(auth('admin')->user(), ['internal.program.create']);
-        return view('backend.pages.internal-programs.create');
+        
+        // Get active events for dropdown
+        $events = Event::active()->orderBy('title')->get();
+        
+        return view('backend.pages.internal-programs.create', compact('events'));
     }
 
     /**
@@ -77,15 +105,17 @@ class InternalProgramController extends Controller
             'phone' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
             'blood_group' => 'required|string|max:10',
-            'present_address' => 'required|string',
+            'upazila_id' => 'required|exists:upazilas,id',
             'tshirt_size' => 'required|string|max:10',
             'payment_method' => 'required|string|max:50',
+            'payment_amount' => 'nullable|numeric',
+            'event_id' => 'nullable|exists:events,id',
             'trx_id' => 'nullable|string|max:100',
             'screenshot' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'status' => 'sometimes|in:pending,approved,rejected',
         ]);
         
-        // Handle screenshot upload
+        // Handle screenshot upload if present (though not in simplified form)
         if ($request->hasFile('screenshot')) {
             $image = $request->file('screenshot');
             $filename = time() . '_' . Str::random(10) . '.' . $image->getClientOriginalExtension();
@@ -106,6 +136,10 @@ class InternalProgramController extends Controller
     public function show(InternalProgram $internalProgram)
     {
         $this->checkAuthorization(auth('admin')->user(), ['internal.program.view']);
+        
+        // Load the event relationship
+        $internalProgram->load('event');
+        
         return view('backend.pages.internal-programs.show', compact('internalProgram'));
     }
 
@@ -115,7 +149,11 @@ class InternalProgramController extends Controller
     public function edit(InternalProgram $internalProgram)
     {
         $this->checkAuthorization(auth('admin')->user(), ['internal.program.edit']);
-        return view('backend.pages.internal-programs.edit', compact('internalProgram'));
+        
+        // Get active events for dropdown
+        $events = Event::active()->orderBy('title')->get();
+        
+        return view('backend.pages.internal-programs.edit', compact('internalProgram', 'events'));
     }
 
     /**
@@ -130,15 +168,17 @@ class InternalProgramController extends Controller
             'phone' => 'required|string|max:20',
             'email' => 'nullable|email|max:255',
             'blood_group' => 'required|string|max:10',
-            'present_address' => 'required|string',
+            'upazila_id' => 'required|exists:upazilas,id',
             'tshirt_size' => 'required|string|max:10',
             'payment_method' => 'required|string|max:50',
+            'payment_amount' => 'nullable|numeric',
+            'event_id' => 'nullable|exists:events,id',
             'trx_id' => 'nullable|string|max:100',
             'screenshot' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'status' => 'required|in:pending,approved,rejected',
         ]);
         
-        // Handle screenshot upload
+        // Handle screenshot upload if present (though not in simplified form)
         if ($request->hasFile('screenshot')) {
             // Delete old screenshot if exists
             if ($internalProgram->screenshot && file_exists(public_path($internalProgram->screenshot))) {
@@ -203,7 +243,7 @@ class InternalProgramController extends Controller
         $internalProgram = InternalProgram::withTrashed()->findOrFail($id);
         $internalProgram->restore();
         
-        return redirect()->route('admin.internal-programs.index')
+        return redirect()->route('admin.internal-programs.trashed')
             ->with('success', 'Internal program restored successfully');
     }
     
@@ -220,7 +260,7 @@ class InternalProgramController extends Controller
     }
     
     /**
-     * Permanently remove the specified resource from storage.
+     * Permanently delete the specified resource from storage.
      */
     public function forceDelete($id)
     {
@@ -237,5 +277,45 @@ class InternalProgramController extends Controller
         
         return redirect()->route('admin.internal-programs.trashed')
             ->with('success', 'Internal program permanently deleted');
+    }
+    
+    /**
+     * Print a list of internal program registrations for a specific event
+     */
+    public function printList(Request $request)
+    {
+        $this->checkAuthorization(auth('admin')->user(), ['internal.program.view']);
+        
+        $query = InternalProgram::query();
+        
+        // Filter by event if provided
+        if ($request->filled('event_id')) {
+            $query->where('event_id', $request->event_id);
+            $event = Event::findOrFail($request->event_id);
+        } else {
+            $event = null;
+        }
+        
+        // Apply status filter if provided
+        if ($request->filled('status')) {
+            $query->where('status', $request->status);
+        }
+        
+        // Get all registrations
+        $registrations = $query->with(['event', 'upazila'])
+                              ->orderBy('name')
+                              ->get();
+        
+        // Calculate statistics
+        $stats = [
+            'total' => $registrations->count(),
+            'pending' => $registrations->where('status', 'pending')->count(),
+            'approved' => $registrations->where('status', 'approved')->count(),
+            'rejected' => $registrations->where('status', 'rejected')->count(),
+            'total_approved_payment' => $registrations->where('status', 'approved')->sum('payment_amount'),
+            'total_payment' => $registrations->sum('payment_amount'),
+        ];
+        
+        return view('backend.pages.internal-programs.print', compact('registrations', 'event', 'stats'));
     }
 }

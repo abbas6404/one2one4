@@ -251,10 +251,14 @@ Route::prefix('admin')->group(function () {
             Route::get('/{internalProgram}', [InternalProgramController::class, 'show'])->name('admin.internal-programs.show');
             Route::get('/{internalProgram}/edit', [InternalProgramController::class, 'edit'])->name('admin.internal-programs.edit');
             Route::put('/{internalProgram}', [InternalProgramController::class, 'update'])->name('admin.internal-programs.update');
+            Route::delete('/{internalProgram}', [InternalProgramController::class, 'destroy'])->name('admin.internal-programs.destroy');
             
             // Additional Internal Program Routes
             Route::patch('/{internalProgram}/update-status', [InternalProgramController::class, 'updateStatus'])
                 ->name('admin.internal-programs.update_status');
+            
+            // Print route
+            Route::get('/print/list', [InternalProgramController::class, 'printList'])->name('admin.internal-programs.print');
         });
 
         // Contact Messages

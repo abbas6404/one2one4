@@ -55,9 +55,8 @@ class BloodRequestController extends Controller
             });
         }
         
-        // Sort by urgency and date
-        $query->orderByRaw("CASE WHEN urgency_level = 'urgent' THEN 0 ELSE 1 END")
-              ->latest();
+        // Sort by ID in descending order (newest first)
+        $query->orderBy('id', 'desc');
         
         // Paginate the results
         $bloodRequests = $query->paginate(10)->withQueryString();

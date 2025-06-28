@@ -378,6 +378,19 @@
                                         </div>
                                     </div>
                                 </div>
+                                
+                                <div class="row mt-4">
+                                    <div class="col-md-12 form-section">
+                                        <div class="form-group">
+                                            <label for="about_journey_title">Journey Title</label>
+                                            <input type="text" class="form-control" id="about_journey_title" name="content[about.journey.title]" value="{{ get_website_content('about.journey.title', 'Our Journey') }}">
+                                        </div>
+                                        <div class="form-group">
+                                            <label for="about_journey_content">Journey Content</label>
+                                            <textarea class="form-control" id="about_journey_content" name="content[about.journey.content]" rows="4">{{ get_website_content('about.journey.content', 'One2One4 was founded in 2022 by a group of passionate individuals from SSF 12 and HSF 14 batch who recognized the critical need for an organized blood donation system within our community. What started as a small WhatsApp group for emergency blood requests has now evolved into a comprehensive platform that connects donors and recipients across Bangladesh.') }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
 
                                 <button type="submit" class="btn btn-primary save-btn">Save About Settings</button>
                             </form>
@@ -801,15 +814,7 @@
                                     <input type="text" class="form-control" id="internal_program_registration_title" name="content[internal_program.registration.title]" value="{{ get_website_content('internal_program.registration.title') }}">
                                 </div>
                                 
-                                <div class="form-group">
-                                    <label for="internal_program_payment_instructions">Payment Instructions</label>
-                                    <textarea class="form-control" id="internal_program_payment_instructions" name="content[internal_program.payment.instructions]" rows="3">{{ get_website_content('internal_program.payment.instructions') }}</textarea>
-                                </div>
-                                
-                                <div class="form-group">
-                                    <label for="internal_program_contact_info">Contact Information</label>
-                                    <textarea class="form-control" id="internal_program_contact_info" name="content[internal_program.contact.info]" rows="3">{{ get_website_content('internal_program.contact.info') }}</textarea>
-                                </div>
+                             
                                 
                                 <button type="submit" class="btn btn-primary save-btn">Save Internal Program Settings</button>
                             </form>
@@ -818,9 +823,47 @@
                         <!-- General Tab Content -->
                         <div class="tab-pane fade content-section" id="general" role="tabpanel" aria-labelledby="general-tab">
                             <h5 class="mb-4">General Settings</h5>
-                            <form id="general-form" method="POST" action="{{ route('admin.web-template.update') }}">
+                            <form id="general-form" method="POST" action="{{ route('admin.web-template.update') }}" enctype="multipart/form-data">
                                 @csrf
                                 <input type="hidden" name="section" value="general">
+                                
+                                <h5 class="mb-3">Logo Settings</h5>
+                                <div class="row mb-4">
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="site_logo">Site Logo</label>
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="site_logo" name="images[site.logo]" accept="image/*">
+                                                <label class="custom-file-label" for="site_logo">Choose logo image</label>
+                                            </div>
+                                            <div class="mt-2">
+                                                @if(get_website_content('site.logo'))
+                                                    <div class="logo-preview">
+                                                        <img src="{{ asset(get_website_content('site.logo')) }}" class="img-thumbnail" style="max-height: 100px">
+                                                    </div>
+                                                @endif
+                                                <small class="form-text text-muted">Recommended size: 200x80px, transparent PNG</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="form-group">
+                                            <label for="site_favicon">Site Favicon</label>
+                                            <div class="custom-file">
+                                                <input type="file" class="custom-file-input" id="site_favicon" name="images[site.favicon]" accept="image/png,image/x-icon,image/ico">
+                                                <label class="custom-file-label" for="site_favicon">Choose favicon</label>
+                                            </div>
+                                            <div class="mt-2">
+                                                @if(get_website_content('site.favicon'))
+                                                    <div class="favicon-preview">
+                                                        <img src="{{ asset(get_website_content('site.favicon')) }}" class="img-thumbnail" style="max-height: 32px">
+                                                    </div>
+                                                @endif
+                                                <small class="form-text text-muted">Recommended size: 32x32px, ICO or PNG format</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                                 
                                 <div class="form-group">
                                     <label for="sponsors_limit">Number of Sponsors to Show</label>
@@ -903,38 +946,30 @@
             localStorage.setItem('activeWebsiteContentTab', $(e.target).attr('href'));
         });
         
-        // Custom file input label update
+        // File input handling for all custom file inputs
         $('.custom-file-input').on('change', function() {
-            let fileName = $(this).val().split('\\').pop();
-            $(this).next('.custom-file-label').addClass("selected").html(fileName || 'Choose image');
+            var fileName = $(this).val().split('\\').pop();
+            $(this).next('.custom-file-label').addClass("selected").html(fileName || 'Choose file');
             
-            // Preview image if file is selected
+            // Preview image if it's an image file
             if (this.files && this.files[0]) {
-                const preview = $(this).closest('.form-group').find('.slider-preview img');
-                if (preview.length) {
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        preview.attr('src', e.target.result);
+                var reader = new FileReader();
+                var previewContainer = $(this).closest('.form-group').find('.logo-preview, .favicon-preview, .slider-preview');
+                
+                reader.onload = function(e) {
+                    if (previewContainer.length) {
+                        // If preview container exists, update the image
+                        if (previewContainer.find('img').length) {
+                            previewContainer.find('img').attr('src', e.target.result);
+                        } else {
+                            // Create new image element if it doesn't exist
+                            previewContainer.html('<img src="' + e.target.result + '" class="img-thumbnail" style="max-height: 100px">');
+                        }
+                        previewContainer.show();
                     }
-                    reader.readAsDataURL(this.files[0]);
-                } else {
-                    // Create preview if it doesn't exist
-                    const previewContainer = $('<div class="slider-preview mt-2"><img src="" class="img-thumbnail" style="max-height: 100px"></div>');
-                    $(this).closest('.form-group').find('.mt-2').prepend(previewContainer);
-                    
-                    const reader = new FileReader();
-                    reader.onload = function(e) {
-                        previewContainer.find('img').attr('src', e.target.result);
-                    }
-                    reader.readAsDataURL(this.files[0]);
                 }
                 
-                // Show a success message that the image has been selected
-                let infoMessage = $('<div class="alert alert-info mt-2 image-selected-alert" style="display:none;"><i class="fa fa-info-circle"></i> New image selected. Save form to update.</div>');
-                if (!$(this).closest('.form-group').find('.image-selected-alert').length) {
-                    $(this).closest('.form-group').append(infoMessage);
-                    infoMessage.fadeIn();
-                }
+                reader.readAsDataURL(this.files[0]);
             }
         });
 

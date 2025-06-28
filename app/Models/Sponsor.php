@@ -19,6 +19,13 @@ class Sponsor extends Model
         'name',
         'logo',
         'url',
+        'phone',
+        'email',
+        'payment_method',
+        'payment_status',
+        'payment_amount',
+        'payment_screenshot',
+        'payment_transaction_id',
         'status',
         'order',
     ];

@@ -45,15 +45,15 @@
                     <ul class="footer-contact-info">
                         <li>
                             <span class="contact-icon"><i class="fas fa-map-marker-alt"></i></span>
-                            <span class="contact-text">{{ app('website-content')->get('footer.contact.address', 'SSF-12 & HSF-14 Batch, Medical College Gate, Dhaka') }}</span>
+                            <span class="contact-text">{{ app('website-content')->get('footer.contact.address', 'Bangladesh') }}</span>
                         </li>
-                        <li>
+                        <!-- <li>
                             <span class="contact-icon"><i class="fas fa-phone-alt"></i></span>
                             <span class="contact-text">{{ app('website-content')->get('footer.contact.phone', '+880 1234 567890') }}</span>
-                        </li>
+                        </li> -->
                         <li>
                             <span class="contact-icon"><i class="fas fa-envelope"></i></span>
-                            <span class="contact-text">{{ app('website-content')->get('footer.contact.email', 'info@one2one4.org') }}</span>
+                            <span class="contact-text">{{ app('website-content')->get('footer.contact.email', 'one2one4.bd@gmail.com') }}</span>
                         </li>
                         <li>
                             <span class="contact-icon"><i class="fas fa-clock"></i></span>

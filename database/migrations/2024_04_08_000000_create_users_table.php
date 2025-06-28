@@ -14,8 +14,9 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             // Basic Information
             $table->id();
+            $table->foreignId('created_by')->nullable()->constrained('admins')->onDelete('set null');
             $table->string('name');
-            $table->string('email')->unique();
+            $table->string('email')->nullable();
             $table->boolean('is_donor')->default(true);
             $table->integer('registration_step')->default(1);
             $table->boolean('profile_completed')->default(false);
@@ -39,7 +40,7 @@ return new class extends Migration
             $table->string('religion')->nullable();
             
             // Blood Donation Information
-            $table->enum('blood_group', ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-'])->nullable();
+            $table->enum('blood_group', ['A+', 'A-', 'B+', 'B-', 'O+', 'O-', 'AB+', 'AB-']);
             $table->integer('total_blood_donation')->default(0);
             $table->text('medical_conditions')->nullable();
             $table->timestamp('last_donation_date')->nullable();

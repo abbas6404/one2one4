@@ -181,6 +181,22 @@ Internal Programs
                                     <a class="dropdown-item {{ request('blood_group') == 'O-' ? 'active' : '' }}" href="{{ route('admin.internal-programs.index', array_merge(request()->except('blood_group', 'page'), ['blood_group' => 'O-'])) }}">O-</a>
                                 </div>
                             </div>
+                            <div class="btn-group ml-2">
+                                <button type="button" class="btn btn-secondary btn-sm dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    Filter by Event
+                                </button>
+                                <div class="dropdown-menu filter-dropdown">
+                                    <a class="dropdown-item {{ request('event_id') == '' ? 'active' : '' }}" href="{{ route('admin.internal-programs.index', array_merge(request()->except('event_id', 'page'), ['event_id' => ''])) }}">All Events</a>
+                                    <a class="dropdown-item {{ request('event_id') == 'none' ? 'active' : '' }}" href="{{ route('admin.internal-programs.index', array_merge(request()->except('event_id', 'page'), ['event_id' => 'none'])) }}">No Event</a>
+                                    <div class="dropdown-divider"></div>
+                                    @foreach($events as $event)
+                                        <a class="dropdown-item {{ request('event_id') == $event->id ? 'active' : '' }}" href="{{ route('admin.internal-programs.index', array_merge(request()->except('event_id', 'page'), ['event_id' => $event->id])) }}">
+                                            {{ $event->title }}
+                                            @if($event->is_featured) <span class="badge badge-info">Featured</span> @endif
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -205,9 +221,19 @@ Internal Programs
                                     <th>ID</th>
                                     <th>Name</th>
                                     <th>Phone</th>
-                                    <th>Blood Group</th>
+                                    <th>Location</th>
                                     <th>T-shirt Size</th>
-                                    <th>Payment Method</th>
+                                    <th>Event</th>
+                                    <th>
+                                        <a href="{{ route('admin.internal-programs.index', array_merge(request()->except(['sort', 'direction', 'page']), ['sort' => 'payment_amount', 'direction' => request('sort') == 'payment_amount' && request('direction') == 'asc' ? 'desc' : 'asc'])) }}" class="text-dark">
+                                            Payment
+                                            @if(request('sort') == 'payment_amount')
+                                                <i class="fa fa-sort-{{ request('direction') == 'asc' ? 'up' : 'down' }}"></i>
+                                            @else
+                                                <i class="fa fa-sort"></i>
+                                            @endif
+                                        </a>
+                                    </th>
                                     <th>Status</th>
                                     <th>Created At</th>
                                     <th>Actions</th>
@@ -219,9 +245,28 @@ Internal Programs
                                         <td>{{ $program->id }}</td>
                                         <td>{{ $program->name }}</td>
                                         <td>{{ $program->phone }}</td>
-                                        <td><span class="blood-group">{{ $program->blood_group }}</span></td>
+                                        <td>
+                                            @if($program->upazila)
+                                                <span class="d-block">{{ $program->upazila->name }}</span>
+                                                <small class="text-muted">{{ $program->upazila->district->name }}, {{ $program->upazila->district->division->name }}</small>
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
                                         <td>{{ $program->tshirt_size }}</td>
-                                        <td>{{ $program->payment_method }}</td>
+                                        <td>
+                                            @if($program->event)
+                                                <span class="badge {{ $program->event->is_featured ? 'badge-info' : 'badge-secondary' }}">
+                                                    {{ $program->event->title }}
+                                                </span>
+                                            @else
+                                                <span class="text-muted">—</span>
+                                            @endif
+                                        </td>
+                                        <td>
+                                            <strong class="d-block text-primary">{{ $program->payment_amount ? number_format($program->payment_amount, 2) . ' BDT' : '—' }}</strong>
+                                            <small class="text-muted">{{ $program->payment_method }}</small>
+                                        </td>
                                         <td>
                                             @if ($program->status == 'pending')
                                                 <span class="badge badge-warning">Pending</span>
@@ -259,4 +304,38 @@ Internal Programs
         </div>
     </div>
 </div>
+@endsection
+
+@section('scripts')
+<script>
+    $(document).ready(function() {
+        // Initialize datatable with advanced features
+        $('#dataTable').DataTable({
+            "order": [[ 0, "desc" ]],
+            "pageLength": 25,
+            "stateSave": true,
+            "autoWidth": false,
+            "language": {
+                "search": "Search registrations:",
+                "lengthMenu": "Show _MENU_ entries",
+                "info": "Showing _START_ to _END_ of _TOTAL_ registrations",
+                "infoEmpty": "Showing 0 to 0 of 0 registrations",
+                "zeroRecords": "No matching registrations found"
+            }
+        });
+
+        // Quick status update buttons
+        $('.quick-status-btn').on('click', function(e) {
+            e.preventDefault();
+            
+            var statusForm = $(this).closest('form');
+            var programId = $(this).data('program-id');
+            var newStatus = $(this).data('status');
+            
+            if (confirm('Are you sure you want to change the status to ' + newStatus + '?')) {
+                statusForm.submit();
+            }
+        });
+    });
+</script>
 @endsection 

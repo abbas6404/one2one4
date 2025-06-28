@@ -55,7 +55,78 @@
         <div class="col-12 mt-5">
             <div class="card">
                 <div class="card-body">
-                    <div class="d-flex justify-content-between align-items-center mb-4">
+
+                    <!-- Internal Program Statistics -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <h5>Internal Program Collections</h5>
+                            <div class="row mt-3">
+                                <div class="col-md-3">
+                                    <div class="card bg-primary text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Total Collections</h5>
+                                            <h2 class="display-4">{{ $internalProgramStats['total'] }}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card bg-warning text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Pending</h5>
+                                            <h2 class="display-4">{{ $internalProgramStats['pending'] }}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card bg-success text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Approved</h5>
+                                            <h2 class="display-4">{{ $internalProgramStats['approved'] }}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="card bg-danger text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Rejected</h5>
+                                            <h2 class="display-4">{{ $internalProgramStats['rejected'] }}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="row mt-3">
+                                <div class="col-md-6">
+                                    <div class="card bg-info text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Total Approved Amount</h5>
+                                            <h2 class="display-4">৳ {{ number_format($internalProgramStats['total_amount'], 2) }}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="card bg-dark text-white">
+                                        <div class="card-body">
+                                            <h5 class="card-title">Total Amount (All Registrations)</h5>
+                                            <h2 class="display-4">৳ {{ number_format($internalProgramStats['all_amount'], 2) }}</h2>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            @if($internalProgramStats['total'] > 0)
+                                <div class="mt-3">
+                                    <a href="{{ route('admin.internal-programs.index', ['event_id' => $event->id]) }}" class="btn btn-primary">
+                                        <i class="fa fa-list"></i> View All Internal Program Registrations
+                                    </a>
+                                    <a href="{{ route('admin.internal-programs.print', ['event_id' => $event->id]) }}" class="btn btn-info ml-2" target="_blank">
+                                        <i class="fa fa-print"></i> Print Full List
+                                    </a>
+                                </div>
+                            @endif
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mb-4 mt-4">
                         <h4 class="header-title">Event Details: {{ $event->title }}</h4>
                         <div>
                             @if (Auth::guard('admin')->user()->can('event.edit'))
@@ -121,7 +192,23 @@
                                 </dd>
                                 
                                 <dt class="col-sm-4">Location:</dt>
-                                <dd class="col-sm-8">{{ $event->location ?? 'Not specified' }}</dd>
+                                <dd class="col-sm-8">
+                                    @if ($event->division || $event->district || $event->upazila)
+                                        @if ($event->upazila)
+                                            {{ $event->upazila->name ?? '' }}
+                                        @endif
+                                        
+                                        @if ($event->district)
+                                            {{ $event->upazila ? ', ' : '' }}{{ $event->district->name ?? '' }}
+                                        @endif
+                                        
+                                        @if ($event->division)
+                                            {{ ($event->district || $event->upazila) ? ', ' : '' }}{{ $event->division->name ?? '' }}
+                                        @endif
+                                    @else
+                                        Not specified
+                                    @endif
+                                </dd>
                                 
                                 <dt class="col-sm-4">Event Status:</dt>
                                 <dd class="col-sm-8">
@@ -135,10 +222,22 @@
                                 </dd>
                                 
                                 <dt class="col-sm-4">Created:</dt>
-                                <dd class="col-sm-8">{{ $event->created_at->format('F d, Y - h:i A') }}</dd>
+                                <dd class="col-sm-8">
+                                    @if($event->created_at)
+                                        {{ $event->created_at->format('F d, Y - h:i A') }}
+                                    @else
+                                        N/A
+                                    @endif
+                                </dd>
                                 
                                 <dt class="col-sm-4">Last Updated:</dt>
-                                <dd class="col-sm-8">{{ $event->updated_at->format('F d, Y - h:i A') }}</dd>
+                                <dd class="col-sm-8">
+                                    @if($event->updated_at)
+                                        {{ $event->updated_at->format('F d, Y - h:i A') }}
+                                    @else
+                                        N/A
+                                    @endif
+                                </dd>
                             </dl>
                         </div>
                     </div>
@@ -153,6 +252,8 @@
                             </div>
                         </div>
                     </div>
+                    
+                
                 </div>
             </div>
         </div>

@@ -165,6 +165,68 @@
         display: block;
         margin-bottom: 1rem;
     }
+    
+    /* Payment method styles */
+    .payment-method-container {
+        margin-bottom: 1.5rem;
+    }
+    
+    .payment-method-option {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem;
+        border: 1px solid #ced4da;
+        border-radius: 4px;
+        margin-bottom: 0.5rem;
+        cursor: pointer;
+        transition: all 0.3s;
+    }
+    
+    .payment-method-option:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .payment-method-option.selected {
+        border-color: #007bff;
+        background-color: rgba(0, 123, 255, 0.05);
+    }
+    
+    .payment-method-option img {
+        height: 30px;
+        margin-right: 1rem;
+    }
+    
+    .payment-info-container {
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+        margin-top: 1rem;
+        border: 1px solid #dee2e6;
+    }
+    
+    .preview-image {
+        max-height: 150px;
+        max-width: 100%;
+        object-fit: contain;
+    }
+    
+    .payment-status-badge {
+        display: inline-block;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    .payment-completed {
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #198754;
+    }
+    
+    .payment-pending {
+        background-color: rgba(255, 193, 7, 0.1);
+        color: #ffc107;
+    }
 </style>
 @endsection
 
@@ -208,52 +270,150 @@
                                 <div class="col-md-8">
                                     <h3 class="form-section-title">Sponsor Information</h3>
                                     
-                                    <div class="form-group mb-4">
-                                        <label for="name" class="form-label required-field">Name</label>
-                                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter sponsor name" value="{{ old('name', $sponsor->name) }}" required>
+                                    <div class="form-group">
+                                        <label for="name" class="form-label required-field">Sponsor Name</label>
+                                        <input type="text" class="form-control @error('name') is-invalid @enderror" id="name" name="name" value="{{ old('name', $sponsor->name) }}" required>
+                                        @error('name')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                     
-                                    <div class="form-group mb-4">
+                                    <div class="form-group">
                                         <label for="url" class="form-label">Website URL</label>
-                                        <input type="url" class="form-control" id="url" name="url" placeholder="https://example.com" value="{{ old('url', $sponsor->url) }}">
-                                        <div class="form-help-text">Enter the full URL including http:// or https://</div>
+                                        <input type="url" class="form-control @error('url') is-invalid @enderror" id="url" name="url" value="{{ old('url', $sponsor->url) }}" placeholder="https://example.com">
+                                        @error('url')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                        <small class="form-help-text">Enter the sponsor's website URL (optional)</small>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="phone" class="form-label required-field">Phone Number</label>
+                                        <input type="text" class="form-control @error('phone') is-invalid @enderror" id="phone" name="phone" value="{{ old('phone', $sponsor->phone) }}" required>
+                                        @error('phone')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="email" class="form-label">Email Address</label>
+                                        <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $sponsor->email) }}">
+                                        @error('email')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="logo" class="form-label">Sponsor Logo</label>
+                                        <div class="preview-container" id="logoPreviewContainer">
+                                            @if ($sponsor->logo)
+                                                <img src="{{ asset($sponsor->logo) }}" alt="{{ $sponsor->name }}" class="preview-image">
+                                            @else
+                                                <span class="preview-placeholder">No logo available</span>
+                                            @endif
+                                        </div>
+                                        <div class="file-upload-container">
+                                            <label class="file-upload-btn">
+                                                <i class="fa fa-cloud-upload-alt mr-2"></i> Change Logo File
+                                                <input type="file" name="logo" id="logo" class="file-upload-input" accept="image/*" onchange="previewLogo(this)">
+                                            </label>
+                                            <div class="selected-file-name" id="logoFileName">No new file selected</div>
+                                        </div>
+                                        <small class="form-help-text">Upload a new logo to replace the existing one (PNG, JPG, JPEG, SVG). Recommended size: 300x200px</small>
+                                        @error('logo')
+                                            <div class="text-danger mt-1">{{ $message }}</div>
+                                        @enderror
+                                    </div>
+                                    
+                                    <h3 class="form-section-title mt-5">Payment Information</h3>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label class="form-label required-field">Payment Method</label>
+                                                <select class="form-control @error('payment_method') is-invalid @enderror" id="payment_method" name="payment_method" required>
+                                                    <option value="bKash" {{ old('payment_method', $sponsor->payment_method) == 'bKash' ? 'selected' : '' }}>bKash</option>
+                                                    <option value="Nagad" {{ old('payment_method', $sponsor->payment_method) == 'Nagad' ? 'selected' : '' }}>Nagad</option>
+                                                    <option value="Rocket" {{ old('payment_method', $sponsor->payment_method) == 'Rocket' ? 'selected' : '' }}>Rocket</option>
+                                                    <option value="Bank_Transfer" {{ old('payment_method', $sponsor->payment_method) == 'Bank_Transfer' ? 'selected' : '' }}>Bank Transfer</option>
+                                                    <option value="Cash" {{ old('payment_method', $sponsor->payment_method) == 'Cash' ? 'selected' : '' }}>Cash</option>
+                                                </select>
+                                                @error('payment_method')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="payment_amount" class="form-label required-field">Payment Amount (BDT)</label>
+                                                <input type="text" class="form-control @error('payment_amount') is-invalid @enderror" id="payment_amount" name="payment_amount" value="{{ old('payment_amount', $sponsor->payment_amount) }}" required>
+                                                @error('payment_amount')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="payment_status" class="form-label required-field">Payment Status</label>
+                                                <select class="form-control @error('payment_status') is-invalid @enderror" id="payment_status" name="payment_status" required>
+                                                    <option value="pending" {{ old('payment_status', $sponsor->payment_status) == 'pending' ? 'selected' : '' }}>Pending</option>
+                                                    <option value="completed" {{ old('payment_status', $sponsor->payment_status) == 'completed' ? 'selected' : '' }}>Completed</option>
+                                                </select>
+                                                @error('payment_status')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                        
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="payment_transaction_id" class="form-label">Transaction ID</label>
+                                                <input type="text" class="form-control @error('payment_transaction_id') is-invalid @enderror" id="payment_transaction_id" name="payment_transaction_id" value="{{ old('payment_transaction_id', $sponsor->payment_transaction_id) }}">
+                                                @error('payment_transaction_id')
+                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                @enderror
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="form-group">
+                                        <label for="payment_screenshot" class="form-label">Payment Screenshot</label>
+                                        <div class="preview-container" id="screenshotPreviewContainer">
+                                            @if ($sponsor->payment_screenshot)
+                                                <img src="{{ asset($sponsor->payment_screenshot) }}" alt="Payment Screenshot" class="preview-image">
+                                            @else
+                                                <span class="preview-placeholder">No screenshot available</span>
+                                            @endif
+                                        </div>
+                                        <small class="form-help-text text-info">Payment screenshots cannot be modified after submission.</small>
                                     </div>
                                 </div>
                                 
                                 <div class="col-md-4">
                                     <h3 class="form-section-title">Display Settings</h3>
                                     
-                                    <div class="form-group mb-4">
-                                        <label for="logo" class="form-label">Logo</label>
-                                        <div class="preview-container" id="logo-preview">
-                                            @if ($sponsor->logo)
-                                                <img src="{{ asset($sponsor->logo) }}" alt="{{ $sponsor->name }}" class="img-fluid" style="max-height: 150px;">
-                                            @else
-                                                <span class="preview-placeholder">No logo available</span>
-                                            @endif
-                                        </div>
-                                        <div class="file-upload-container">
-                                            <div class="file-upload-btn">
-                                                <i class="fa fa-upload mr-1"></i> Change Logo File
-                                            </div>
-                                            <input type="file" class="file-upload-input" id="logo" name="logo" accept="image/*">
-                                            <div class="selected-file-name">No new file selected</div>
-                                        </div>
-                                        <div class="form-help-text">Upload a new logo to replace the existing one. Max 2MB. Recommended size: 200x100px</div>
+                                    <div class="form-group">
+                                        <label for="order" class="form-label">Display Order</label>
+                                        <input type="number" class="form-control @error('order') is-invalid @enderror" id="order" name="order" value="{{ old('order', $sponsor->order) }}" min="0">
+                                        @error('order')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
+                                        <small class="form-help-text">Lower numbers will be displayed first</small>
                                     </div>
                                     
-                                    <div class="form-group mb-4">
-                                        <label for="order" class="form-label required-field">Display Order</label>
-                                        <input type="number" class="form-control" id="order" name="order" min="1" value="{{ old('order', $sponsor->order) }}" required>
-                                        <div class="form-help-text">Lower numbers will be displayed first</div>
-                                    </div>
-                                    
-                                    <div class="form-group mb-4">
-                                        <label for="status" class="form-label required-field">Status</label>
-                                        <select class="form-control" id="status" name="status" required>
+                                    <div class="form-group">
+                                        <label for="status" class="form-label">Status</label>
+                                        <select class="form-control @error('status') is-invalid @enderror" id="status" name="status">
                                             <option value="active" {{ old('status', $sponsor->status) == 'active' ? 'selected' : '' }}>Active</option>
                                             <option value="inactive" {{ old('status', $sponsor->status) == 'inactive' ? 'selected' : '' }}>Inactive</option>
                                         </select>
+                                        @error('status')
+                                            <div class="invalid-feedback">{{ $message }}</div>
+                                        @enderror
                                     </div>
                                 </div>
                             </div>
@@ -273,19 +433,42 @@
 
 @section('scripts')
 <script>
-    $(document).ready(function() {
-        // Preview logo before upload
-        $('#logo').change(function() {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    $('#logo-preview').html('<img src="' + e.target.result + '" style="max-height: 150px; max-width: 100%;">');
-                    $('.selected-file-name').text(file.name);
-                }
-                reader.readAsDataURL(file);
+    // Logo preview functionality
+    function previewLogo(input) {
+        const container = document.getElementById('logoPreviewContainer');
+        const fileName = document.getElementById('logoFileName');
+        
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            fileName.textContent = file.name;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                container.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Logo Preview">`;
             }
-        });
-    });
+            reader.readAsDataURL(file);
+        } else {
+            fileName.textContent = 'No new file selected';
+        }
+    }
+    
+    // Screenshot preview functionality
+    function previewScreenshot(input) {
+        const container = document.getElementById('screenshotPreviewContainer');
+        const fileName = document.getElementById('screenshotFileName');
+        
+        if (input.files && input.files[0]) {
+            const file = input.files[0];
+            fileName.textContent = file.name;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                container.innerHTML = `<img src="${e.target.result}" class="preview-image" alt="Screenshot Preview">`;
+            }
+            reader.readAsDataURL(file);
+        } else {
+            fileName.textContent = 'No new file selected';
+        }
+    }
 </script>
 @endsection 
