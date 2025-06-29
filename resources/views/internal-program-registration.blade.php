@@ -320,8 +320,9 @@
                         </div>
                     @endif
                     
-                    <form action="{{ route('internal-program.register') }}" method="POST" enctype="multipart/form-data">
+                    <form action="{{ route('internal-program.register') }}" method="POST" enctype="multipart/form-data" id="programRegistrationForm">
                         @csrf
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                         
                         <div class="row">
                             <div class="col-md-6 mb-3">
@@ -520,6 +521,7 @@
                         <div class="card-body">
                             <form id="statusCheckForm" action="{{ route('internal-program.check-status') }}" method="POST" class="mb-0">
                                 @csrf
+                                <input type="hidden" name="_token" value="{{ csrf_token() }}" />
                                 <div class="input-group">
                                     <input type="text" class="form-control" id="phone_number" name="phone_number" placeholder="Enter your phone number" required>
                                     <button class="btn btn-primary" type="submit">Check Status</button>
@@ -595,6 +597,42 @@
                 option.classList.add('text-primary', 'fw-bold');
             }
         });
+        
+        // Add CSRF protection for the main registration form
+        const programRegistrationForm = document.getElementById('programRegistrationForm');
+        if (programRegistrationForm) {
+            programRegistrationForm.addEventListener('submit', function(e) {
+                // Check if the form has a valid CSRF token
+                const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+                const tokenInput = this.querySelector('input[name="_token"]');
+                
+                if (!tokenInput || !tokenInput.value) {
+                    e.preventDefault(); // Prevent the default form submission
+                    
+                    // If the token input is missing or empty, try to get it from meta tag
+                    if (csrfToken) {
+                        // Create a new token input if needed
+                        if (!tokenInput) {
+                            const input = document.createElement('input');
+                            input.type = 'hidden';
+                            input.name = '_token';
+                            input.value = csrfToken;
+                            this.appendChild(input);
+                            this.submit(); // Submit the form with the new token
+                        } else {
+                            // Update the existing token input
+                            tokenInput.value = csrfToken;
+                            this.submit(); // Submit the form with the updated token
+                        }
+                    } else {
+                        // If no CSRF token is available, use the fallback route
+                        this.action = "{{ route('internal-program.register-no-csrf') }}";
+                        this.submit(); // Submit to the no-CSRF route
+                    }
+                }
+                // If a valid token exists, let the form submit normally
+            });
+        }
     });
 
     // Preview uploaded screenshot
@@ -859,17 +897,24 @@
         const phoneNumber = document.getElementById('phone_number').value;
         const statusResult = document.getElementById('statusResult');
         const submitButton = this.querySelector('button[type="submit"]');
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content || document.querySelector('input[name="_token"]')?.value;
         
         // Show loading state
         submitButton.disabled = true;
         submitButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Checking...';
         
+        // Set the URL based on CSRF token availability
+        let url = this.action;
+        if (!csrfToken) {
+            url = "{{ route('internal-program.check-status-no-csrf') }}";
+        }
+        
         // Make AJAX request
-        fetch(this.action, {
+        fetch(url, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
+                ...(csrfToken ? { 'X-CSRF-TOKEN': csrfToken } : {})
             },
             body: JSON.stringify({ phone_number: phoneNumber })
         })

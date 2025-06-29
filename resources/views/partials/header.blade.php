@@ -36,7 +36,7 @@
                         <a class="nav-link {{ request()->routeIs('gallery') ? 'active' : '' }}" href="{{ route('gallery') }}">GALLERY</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link {{ request()->routeIs('internal-program.registration') ? 'active' : '' }}" href="{{ route('internal-program.registration') }}">EVENT REGISTRATION</a>
+                        <a class="nav-link {{ request()->routeIs('internal-program.registration') ? 'active' : '' }}" href="{{ route('internal-program.registration') }}">UPCOMING EVENTS</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link {{ request()->routeIs('emergency') ? 'active' : '' }}" href="{{ route('emergency') }}">EMERGENCY</a>
@@ -100,7 +100,7 @@
                     <li class="mobile-nav-item {{ request()->routeIs('internal-program.registration') ? 'active' : '' }}">
                         <a href="{{ route('internal-program.registration') }}" class="mobile-nav-link">
                             <i class="fas fa-calendar-check"></i>
-                            <span>INTERNAL PROGRAMS</span>
+                            <span>UPCOMING EVENTS</span>
                         </a>
                     </li>
                     <li class="mobile-nav-item {{ request()->routeIs('emergency') ? 'active' : '' }}">
@@ -136,7 +136,7 @@
                     </li>
                     <li>
                         <i class="fas fa-envelope"></i>
-                        <span>{{ app('website-content')->get('footer.contact.email', 'info@one2one4.org') }}</span>
+                        <span>{{ app('website-content')->get('footer.contact.email', 'info@one2one4.com') }}</span>
                     </li>
                 </ul>
                 
@@ -170,6 +170,12 @@
                         <i class="fab fa-youtube"></i>
                     </a>
                     @endif
+                </div>
+                
+                <div class="mobile-aio-credit">
+                    <div class="col-md-6 text-md-end">
+                    <p class="mb-0">Designed with <i class="fas fa-heart text-danger"></i> by <a href="https://www.aioinnovation.com/" target="_blank">AiO Innovation Limited</a></p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -366,6 +372,36 @@
 .mobile-social-link:hover {
     background: #b22222;
     color: #fff;
+}
+
+/* AIO Credit Styling */
+.mobile-aio-credit {
+    margin-top: 1.5rem;
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.aio-link {
+    display: inline-block;
+    text-decoration: none;
+    transition: all 0.3s;
+}
+
+.love-by {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    margin-right: 4px;
+}
+
+.aio-name {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: #b22222;
+}
+
+.aio-link:hover .aio-name {
+    color: #ff6b6b;
 }
 
 @media (min-width: 992px) {

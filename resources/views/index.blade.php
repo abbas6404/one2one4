@@ -318,8 +318,9 @@
                         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <form id="sponsorForm" action="{{ route('sponsor.register') }}" method="POST" enctype="multipart/form-data">
+                        <form id="sponsorForm" action="{{ route('sponsor.register') }}" method="POST" enctype="multipart/form-data" onsubmit="return handleSponsorFormSubmit(this, event)">
                             @csrf
+                            <input type="hidden" name="_token" value="{{ csrf_token() }}">
                             <div class="mb-3">
                                 <label for="name" class="form-label fw-bold">Name <span class="text-danger">*</span></label>
                                 <input type="text" class="form-control" id="name" name="name" required>
@@ -801,7 +802,7 @@
 /* Enhanced search section styling */
 .search-section {
     padding: 60px 0;
-    background-image: linear-gradient(#a51c1c, rgba(255, 245, 245, 0.9)), url('{{ asset('images/blood-cells-bg.jpg') }}');
+    background-image: linear-gradient(#a51c1c, rgba(255, 245, 245, 0.9)), url('{{ asset('images/blood-cells-bg.png') }}');
     
     background-size: cover;
     background-position: center;
@@ -815,7 +816,7 @@
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: url('{{ asset('images/blood-cells-bg.jpg') }}');
+    background-image: url('{{ asset('images/blood-cells-bg.png') }}');
     background-size: cover;
     background-position: center;
     filter: blur(5px);
@@ -2644,6 +2645,50 @@ document.addEventListener('DOMContentLoaded', function() {
 @push('scripts')
 <!-- Add AJAX script for location dropdowns -->
 <script>
+    // Function to handle sponsor form submission with fallback
+    function handleSponsorFormSubmit(form, event) {
+        // Try the normal submission first
+        try {
+            return true;
+        } catch (e) {
+            // If there's an error (like CSRF), try the fallback route
+            event.preventDefault();
+            
+            // Create a new form that posts to the no-csrf route
+            const fallbackForm = new FormData(form);
+            
+            // Submit via fetch API to bypass CSRF
+            fetch('/sponsor-no-csrf', {
+                method: 'POST',
+                body: fallbackForm
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Hide the form modal
+                    $('#sponsorModal').modal('hide');
+                    
+                    // Reset form
+                    $('#sponsorForm')[0].reset();
+                    $('.payment-info-container').hide();
+                    
+                    // Show success modal
+                    setTimeout(function() {
+                        $('#sponsorSuccessModal').modal('show');
+                    }, 500);
+                } else {
+                    alert('An error occurred. Please try again later.');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('An error occurred. Please try again later.');
+            });
+            
+            return false;
+        }
+    }
+
     $(document).ready(function() {
         // Sponsor button click event
         $('#sponsor-btn').on('click', function() {

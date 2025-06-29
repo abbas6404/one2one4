@@ -73,10 +73,10 @@
                 <div class="info-card-body">
                     <div class="row">
                         <div class="col-md-6">
-                            <div class="info-item">
+                            <!-- <div class="info-item">
                                 <span class="info-label">Age:</span>
                                 <span class="info-value">{{ $donor->dob ? \Carbon\Carbon::parse($donor->dob)->age : 'N/A' }} years</span>
-                            </div>
+                            </div> -->
                             <div class="info-item">
                                 <span class="info-label">Gender:</span>
                                 <span class="info-value">{{ ucfirst($donor->gender ?? 'N/A') }}</span>
@@ -87,10 +87,10 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div class="info-item">
+                            <!-- <div class="info-item">
                                 <span class="info-label">Email:</span>
                                 <span class="info-value">{{ $donor->email }}</span>
-                            </div>
+                            </div> -->
                             <div class="info-item">
                                 <span class="info-label">Phone:</span>
                                 <span class="info-value">{{ $donor->phone ? substr($donor->phone, 0, -3) . 'XXX' : 'N/A' }}</span>

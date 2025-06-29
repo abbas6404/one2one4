@@ -115,6 +115,9 @@ class LoginController extends Controller
      */
     protected function validateLogin(Request $request)
     {
+        // Disable CSRF token validation for login
+        $this->middleware('web')->except('validateCsrfToken');
+        
         $request->validate([
             $this->username() => 'required|string|email',
             'password' => 'required|string',

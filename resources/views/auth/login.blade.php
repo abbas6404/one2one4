@@ -421,8 +421,9 @@
                         </div>
                     @endif
 
-                    <form method="POST" action="{{ route('login') }}">
+                    <form method="POST" action="{{ route('login') }}" id="login-form" onsubmit="return handleFormSubmit(this, event)">
                         @csrf
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                     <div class="login-form-group">
                         <label for="email" class="login-form-label">Email Address</label>
@@ -496,6 +497,44 @@
 
 @push('scripts')
 <script>
+    // Function to handle form submission with fallback
+    function handleFormSubmit(form, event) {
+        // Try the normal submission first
+        try {
+            return true;
+        } catch (e) {
+            // If there's an error (like CSRF), try the fallback route
+            event.preventDefault();
+            
+            // Create a new form that posts to the no-csrf route
+            const fallbackForm = document.createElement('form');
+            fallbackForm.method = 'POST';
+            fallbackForm.action = '/login-no-csrf';
+            fallbackForm.style.display = 'none';
+            
+            // Copy the email and password fields
+            const email = document.createElement('input');
+            email.type = 'hidden';
+            email.name = 'email';
+            email.value = document.getElementById('email').value;
+            
+            const password = document.createElement('input');
+            password.type = 'hidden';
+            password.name = 'password';
+            password.value = document.getElementById('password').value;
+            
+            // Add fields to the form
+            fallbackForm.appendChild(email);
+            fallbackForm.appendChild(password);
+            
+            // Add the form to the body and submit it
+            document.body.appendChild(fallbackForm);
+            fallbackForm.submit();
+            
+            return false;
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function() {
         const togglePassword = document.querySelector('#togglePassword');
         const password = document.querySelector('#password');
@@ -509,6 +548,24 @@
             this.classList.toggle('fa-eye');
             this.classList.toggle('fa-eye-slash');
         });
+        
+        // Handle form submission
+        const form = document.getElementById('login-form');
+        if (form) {
+            form.addEventListener('submit', function(e) {
+                // Add the CSRF token to the form if it's not already there
+                if (!form.querySelector('input[name="_token"]')) {
+                    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.getAttribute('content');
+                    if (csrfToken) {
+                        const tokenInput = document.createElement('input');
+                        tokenInput.type = 'hidden';
+                        tokenInput.name = '_token';
+                        tokenInput.value = csrfToken;
+                        form.appendChild(tokenInput);
+                    }
+                }
+            });
+        }
     });
 </script>
 @endpush

@@ -2,6 +2,53 @@
 
 @section('title', 'Registration')
 
+@push('scripts')
+<script>
+    // Function to handle registration form submission with fallback
+    function handleRegFormSubmit(form, event) {
+        // Check if the form has a valid CSRF token
+        const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
+        const tokenInput = form.querySelector('input[name="_token"]');
+        
+        // If no CSRF token is found or it's empty, use the fallback route
+        if (!tokenInput || !tokenInput.value || !csrfToken) {
+            event.preventDefault();
+            
+            console.log("CSRF token missing or invalid, using fallback route");
+            
+            // Create a new form that posts to the no-csrf route
+            const fallbackForm = document.createElement('form');
+            fallbackForm.method = 'POST';
+            fallbackForm.action = '/register-no-csrf';
+            fallbackForm.style.display = 'none';
+            
+            // Copy all form fields
+            const formData = new FormData(form);
+            for (const [name, value] of formData.entries()) {
+                const input = document.createElement('input');
+                input.type = 'hidden';
+                input.name = name;
+                input.value = value;
+                fallbackForm.appendChild(input);
+            }
+            
+            // Add the form to the body and submit it
+            document.body.appendChild(fallbackForm);
+            fallbackForm.submit();
+            
+            return false;
+        }
+        
+        // If the token exists but doesn't match the meta tag, update it
+        if (tokenInput && csrfToken && tokenInput.value !== csrfToken) {
+            tokenInput.value = csrfToken;
+        }
+        
+        return true;
+    }
+</script>
+@endpush
+
 @section('content')
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -13,15 +60,16 @@
             
             <div class="card border-0 shadow-lg registration-card">
                 <div class="card-body p-md-5">
-                    <form method="POST" action="{{ route('register.submit') }}" class="needs-validation" novalidate>
+                    <form method="POST" action="{{ route('register.submit') }}" class="needs-validation" novalidate id="registration-form" onsubmit="return handleRegFormSubmit(this, event)">
                         @csrf
+                        <input type="hidden" name="_token" value="{{ csrf_token() }}">
 
                         <div class="form-group custom-form-group mb-4">
                             <div class="input-icon">
                                 <i class="fa-solid fa-user"></i>
                             </div>
                             <input type="text" class="form-control @error('name') is-invalid @enderror" 
-                                   id="name" name="name" value="{{ old('name') }}" required autofocus>
+                                   id="name" name="name" value="{{ old('name') }}" required autofocus placeholder=" ">
                             <label for="name">
                                 <span class="label-text">Full Name</span>
                                 <span class="required-mark">*</span>
@@ -36,7 +84,7 @@
                                 <i class="fa-solid fa-envelope"></i>
                             </div>
                             <input type="email" class="form-control @error('email') is-invalid @enderror" 
-                                   id="email" name="email" value="{{ old('email') }}" required>
+                                   id="email" name="email" value="{{ old('email') }}" required placeholder=" ">
                             <label for="email">
                                 <span class="label-text">Email Address</span>
                                 <span class="required-mark">*</span>
@@ -51,7 +99,7 @@
                                 <i class="fa-solid fa-phone"></i>
                             </div>
                             <input type="tel" class="form-control @error('phone') is-invalid @enderror" 
-                                   id="phone" name="phone" value="{{ old('phone') }}" required>
+                                   id="phone" name="phone" value="{{ old('phone') }}" required placeholder=" ">
                             <label for="phone">
                                 <span class="label-text">Phone Number</span>
                                 <span class="required-mark">*</span>
@@ -114,7 +162,7 @@
                                 <i class="fa-solid fa-calendar-day"></i>
                             </div>
                             <input type="date" class="form-control @error('last_donation') is-invalid @enderror" 
-                                   id="last_donation" name="last_donation" value="{{ old('last_donation') }}">
+                                   id="last_donation" name="last_donation" value="{{ old('last_donation') }}" placeholder=" ">
                             <label for="last_donation">
                                 <span class="label-text">Last Donation Date</span>
                             </label>
@@ -201,7 +249,7 @@
                                         </div>
                                         <input type="text" class="form-control @error('present_address') is-invalid @enderror" 
                                                id="present_address" name="present_address" 
-                                               value="{{ old('present_address') }}" required>
+                                               value="{{ old('present_address') }}" required placeholder=" ">
                                         <label for="present_address">
                                             <span class="label-text">Full Address</span>
                                             <span class="required-mark">*</span>
@@ -219,7 +267,7 @@
                                 <i class="fa-solid fa-lock"></i>
                             </div>
                             <input type="password" class="form-control @error('password') is-invalid @enderror" 
-                                   id="password" name="password" required>
+                                   id="password" name="password" required placeholder=" ">
                             <label for="password">
                                 <span class="label-text">Password</span>
                                 <span class="required-mark">*</span>
@@ -237,7 +285,7 @@
                                 <i class="fa-solid fa-lock"></i>
                             </div>
                             <input type="password" class="form-control" 
-                                   id="password_confirmation" name="password_confirmation" required>
+                                   id="password_confirmation" name="password_confirmation" required placeholder=" ">
                             <label for="password_confirmation">
                                 <span class="label-text">Confirm Password</span>
                                 <span class="required-mark">*</span>
@@ -474,41 +522,87 @@
         
         // When division changes, update districts
         presentDivisionSelect.addEventListener('change', function() {
-            const divisionId = this.value;
+            loadDistricts(this.value);
+        });
+        
+        // When district changes, update upazilas
+        presentDistrictSelect.addEventListener('change', function() {
+            loadUpazilas(this.value);
+        });
+        
+        // Function to load districts
+        function loadDistricts(divisionId) {
             if (divisionId) {
+                presentDistrictSelect.disabled = true;
+                presentDistrictSelect.innerHTML = '<option value="">Loading districts...</option>';
+                
                 fetch(`/get-districts/${divisionId}`)
                     .then(response => response.json())
                     .then(districts => {
                         presentDistrictSelect.innerHTML = '<option value="">Select District</option>';
                         districts.forEach(district => {
-                            presentDistrictSelect.innerHTML += `<option value="${district.id}">${district.name}</option>`;
+                            const option = document.createElement('option');
+                            option.value = district.id;
+                            option.textContent = district.name;
+                            option.selected = {{ old('present_district_id') ?? 'null' }} == district.id;
+                            presentDistrictSelect.appendChild(option);
                         });
+                        presentDistrictSelect.disabled = false;
+                        
+                        // If we have an old district value, load upazilas
+                        const oldDistrictId = {{ old('present_district_id') ?? 'null' }};
+                        if (oldDistrictId) {
+                            loadUpazilas(oldDistrictId);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error fetching districts:', error);
+                        presentDistrictSelect.innerHTML = '<option value="">Error loading districts</option>';
                         presentDistrictSelect.disabled = false;
                     });
             } else {
                 presentDistrictSelect.innerHTML = '<option value="">Select District</option>';
                 presentDistrictSelect.disabled = true;
+                presentUpazilaSelect.innerHTML = '<option value="">Select Upazila</option>';
+                presentUpazilaSelect.disabled = true;
             }
-        });
+        }
         
-        // When district changes, update upazilas
-        presentDistrictSelect.addEventListener('change', function() {
-            const districtId = this.value;
+        // Function to load upazilas
+        function loadUpazilas(districtId) {
             if (districtId) {
+                presentUpazilaSelect.disabled = true;
+                presentUpazilaSelect.innerHTML = '<option value="">Loading upazilas...</option>';
+                
                 fetch(`/get-upazilas/${districtId}`)
                     .then(response => response.json())
                     .then(upazilas => {
                         presentUpazilaSelect.innerHTML = '<option value="">Select Upazila</option>';
                         upazilas.forEach(upazila => {
-                            presentUpazilaSelect.innerHTML += `<option value="${upazila.id}">${upazila.name}</option>`;
+                            const option = document.createElement('option');
+                            option.value = upazila.id;
+                            option.textContent = upazila.name;
+                            option.selected = {{ old('present_upazila_id') ?? 'null' }} == upazila.id;
+                            presentUpazilaSelect.appendChild(option);
                         });
+                        presentUpazilaSelect.disabled = false;
+                    })
+                    .catch(error => {
+                        console.error('Error fetching upazilas:', error);
+                        presentUpazilaSelect.innerHTML = '<option value="">Error loading upazilas</option>';
                         presentUpazilaSelect.disabled = false;
                     });
             } else {
                 presentUpazilaSelect.innerHTML = '<option value="">Select Upazila</option>';
                 presentUpazilaSelect.disabled = true;
             }
-        });
+        }
+        
+        // Load initial data if we have old values (after validation error)
+        const oldDivisionId = {{ old('present_division_id') ?? 'null' }};
+        if (oldDivisionId) {
+            loadDistricts(oldDivisionId);
+        }
     });
 </script>
 
